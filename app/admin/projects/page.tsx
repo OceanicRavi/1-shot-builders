@@ -1,0 +1,156 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { Loader2, Plus, Search } from "lucide-react";
+import { statusToLabel, statusToColor } from "@/lib/utils";
+import { db } from "@/lib/services/database";
+import { AddProjectDialog } from "@/components/dialogs/add-project-dialog";
+
+interface Project {
+  id: string;
+  name: string;
+  description: string | null;
+  location: string | null;
+  status: 'planning' | 'in_progress' | 'completed';
+  franchise: { name: string } | null;
+  client: { user: { full_name: string } } | null;
+  created_at: string;
+}
+
+export default function AdminProjectsPage() {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const { toast } = useToast();
+
+  async function loadProjects() {
+    try {
+      const { data, error } = await db.projects.list({
+        status: statusFilter,
+        search: searchTerm
+      });
+
+      if (error) throw error;
+
+      setProjects(data || []);
+    } catch (error: any) {
+      console.error("Error loading projects:", error);
+      toast({
+        title: "Error loading projects",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    loadProjects();
+  }, [searchTerm, statusFilter, toast]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight">Project Management</h1>
+        <p className="text-muted-foreground">Manage and monitor all construction projects</p>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Projects</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col md:flex-row gap-4 mb-6">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search projects..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-full md:w-[200px]">
+                <SelectValue placeholder="Filter by status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="planning">Planning</SelectItem>
+                <SelectItem value="in_progress">In Progress</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button onClick={() => setShowAddDialog(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              New Project
+            </Button>
+          </div>
+
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Project Name</TableHead>
+                  <TableHead>Location</TableHead>
+                  <TableHead>Franchise</TableHead>
+                  <TableHead>Client</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Created</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {projects.map((project) => (
+                  <TableRow key={project.id}>
+                    <TableCell className="font-medium">{project.name}</TableCell>
+                    <TableCell>{project.location || "N/A"}</TableCell>
+                    <TableCell>{project.franchise?.name || "N/A"}</TableCell>
+                    <TableCell>{project.client?.user?.full_name || "N/A"}</TableCell>
+                    <TableCell>
+                      <Badge className={statusToColor[project.status]}>
+                        {statusToLabel[project.status]}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {new Date(project.created_at).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button variant="outline" size="sm">
+                        View Details
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+
+      <AddProjectDialog
+        open={showAddDialog}
+        onOpenChange={setShowAddDialog}
+        onSuccess={loadProjects}
+      />
+    </>
+  );
+}
