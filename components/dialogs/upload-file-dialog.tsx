@@ -80,11 +80,6 @@ export function UploadFileDialog({ open, onOpenChange, onSuccess }: UploadFileDi
     setIsSubmitting(true);
 
     try {
-      const { data: session } = await db.auth.getSession();
-      
-      if (!session?.user?.id) {
-        throw new Error("User not authenticated");
-      }
 
       // Upload files to Supabase Storage
       for (const file of uploadedFiles) {
@@ -109,7 +104,7 @@ export function UploadFileDialog({ open, onOpenChange, onSuccess }: UploadFileDi
           project_id: values.projectId,
           file_url: publicUrl,
           file_type: values.fileType,
-          uploaded_by: session.user.id,
+          uploaded_by: '',
         });
 
         if (uploadError) throw uploadError;

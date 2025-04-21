@@ -48,11 +48,11 @@ export default function FranchiseApplicationPage() {
     
     try {
 
-      const { error } = await db.franchise.create({
+      const { error } = await db.franchise_applications.create({
         applicant_name: values.name,
         email: values.email,
         phone: values.phone,
-        reason: `Location: ${values.location}\n\nExperience: ${values.experience}\n\nReason: ${values.reason}`,
+        reason: values.reason ?? null, // optional
       });
       
       if (error) throw error;

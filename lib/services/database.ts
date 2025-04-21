@@ -124,6 +124,21 @@ export const db = {
     }
   },
 
+  storage: {
+    from: (bucket: string) => ({
+      upload: (path: string, file: File) =>
+        supabase.storage.from(bucket).upload(path, file),
+      getPublicUrl: (path: string) =>
+        supabase.storage.from(bucket).getPublicUrl(path),
+      download: (path: string) =>
+        supabase.storage.from(bucket).download(path),
+      remove: (paths: string[]) =>
+        supabase.storage.from(bucket).remove(paths),
+      list: (path?: string) =>
+        supabase.storage.from(bucket).list(path),
+    })
+  },
+
   audit: {
     list: async ({ limit }: { limit: number }) => {
       const { data, error } = await supabase
@@ -135,7 +150,7 @@ export const db = {
     }
   },
 
-  franchise: {
+  franchise_applications: {
     create: async(upload: Database['public']['Tables']['franchise_applications']['Insert']) => {
             const { data, error } = await supabase
               .from("franchise_applications")

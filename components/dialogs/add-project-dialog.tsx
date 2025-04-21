@@ -44,8 +44,6 @@ export function AddProjectDialog({ open, onOpenChange, onSuccess }: AddProjectDi
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
-      const { data: session } = await db.auth.getSession();
-      
       const { error } = await db.projects.create({
         name: values.name,
         description: values.description,
@@ -53,7 +51,7 @@ export function AddProjectDialog({ open, onOpenChange, onSuccess }: AddProjectDi
         status: values.status,
         franchise_id: values.franchiseId,
         client_id: values.clientId,
-        created_by: session?.user?.id,
+        created_by: null,
       });
 
       if (error) throw error;

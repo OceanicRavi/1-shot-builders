@@ -67,7 +67,7 @@ export default function AdminUsersPage() {
     loadUsers();
   }, [searchTerm, roleFilter, toast]);
 
-  async function handleRoleChange(userId: string, newRole: string) {
+  async function handleRoleChange(userId: string, newRole: "admin" | "user" | "client" | "franchise" | "internal") {
     try {
       const { error } = await db.users.update(userId, { role: newRole });
 
@@ -157,10 +157,13 @@ export default function AdminUsersPage() {
                     <TableCell>{user.full_name}</TableCell>
                     <TableCell>{user.email}</TableCell>
                     <TableCell>
-                      <Select
-                        value={user.role}
-                        onValueChange={(value) => handleRoleChange(user.id, value)}
-                      >
+                    <Select
+                      value={user.role}
+                      onValueChange={(value: "admin" | "user" | "client" | "franchise" | "internal") =>
+                        handleRoleChange(user.id, value)
+                    }
+                    >
+
                         <SelectTrigger className="w-[140px]">
                           <SelectValue>{roleToLabel[user.role] || user.role}</SelectValue>
                         </SelectTrigger>
