@@ -41,9 +41,8 @@ export default function SignupPage() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-
+  
     try {
-      // Create auth user in Supabase
       const { data: authData, error: authError } = await db.auth.signUp(
         values.email,
         values.password,
@@ -52,42 +51,47 @@ export default function SignupPage() {
           role: values.role,
         }
       );
-
-      if (authError) throw authError;
-
-      if (authData.user) {
-        // Create profile in users table
-        const { error: profileError } = await db.users.create({
-          id: authData.user.id,
-          email: values.email,
-          full_name: values.fullName,
-          role: values.role,
-        });
-
-        if (profileError) {
-          // If profile creation fails, clean up the auth user
-          await db.auth.signOut();
-          throw profileError;
+  
+      if (authError) {
+        // Handle duplicate email specifically
+        if (authError.code === "23505") {
+          toast({
+            title: "Email already registered",
+            description: "Please log in or use a different email address.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Signup failed",
+            description: authError.message || "Something went wrong.",
+            variant: "destructive",
+          });
         }
-
+        return;
+      }
+  
+      if (authData.user) {
+        // Supabase trigger inserts into `users`, no manual insert needed
         toast({
           title: "Account created successfully!",
           description: "You can now sign in with your credentials.",
         });
-
+  
         router.push("/auth/signin");
       }
     } catch (error: any) {
       console.error("Signup error:", error);
       toast({
-        title: "Error creating account",
-        description: error.message || "Something went wrong. Please try again.",
+        title: "Unexpected error",
+        description: error.message || "Please try again.",
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
     }
   }
+  
+  
 
   return (
     <div className="flex min-h-screen flex-col">
