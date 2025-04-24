@@ -78,7 +78,7 @@ export const db = {
           *,
           franchise:franchises(name),
           client:clients(user:users(full_name))
-        `, { count: 'exact' });
+        `, { count: 'exact' }).is("deleted_at", null);
 
       if (filters?.status && filters.status !== 'all') {
         query = query.eq('status', filters.status);
@@ -94,8 +94,25 @@ export const db = {
     create: async (project: Database['public']['Tables']['projects']['Insert']) => {
       const { data, error } = await supabase
         .from('projects')
-        .insert(project);
+        .insert(project)
+        .select()
+        .single();
       return { data, error };
+    },
+    update: async (id: string, updates: Partial<Database['public']['Tables']['projects']['Update']>) => {
+      const { data, error } = await supabase
+        .from('projects')
+        .update(updates)
+        .eq('id', id); // optional: fetch updated record
+      return { data, error };
+    },
+  
+    softDelete: async (id: string) => {
+      const { error } = await supabase
+        .from('projects')
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('id', id);
+      return { error };
     }
   },
 

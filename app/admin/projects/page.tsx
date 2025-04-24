@@ -12,6 +12,8 @@ import { Loader2, Plus, Search } from "lucide-react";
 import { statusToLabel, statusToColor } from "@/lib/utils";
 import { db } from "@/lib/services/database";
 import { AddProjectDialog } from "@/components/dialogs/add-project-dialog";
+import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
+import { EditProjectDialog } from "@/components/dialogs/edit-project-dailog";
 
 interface Project {
   id: string;
@@ -22,6 +24,7 @@ interface Project {
   franchise: { name: string } | null;
   client: { user: { full_name: string } } | null;
   created_at: string;
+  deleted_at?: string;
 }
 
 export default function AdminProjectsPage() {
@@ -30,6 +33,9 @@ export default function AdminProjectsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [editProject, setEditProject] = useState<Project | null>(null);
+
   const { toast } = useToast();
 
   async function loadProjects() {
@@ -57,6 +63,34 @@ export default function AdminProjectsPage() {
   useEffect(() => {
     loadProjects();
   }, [searchTerm, statusFilter, toast]);
+
+  async function handleDeleteProject(projectId: string) {
+    try {
+      const { error } = await db.projects.update(projectId, {
+        deleted_at: new Date().toISOString(),
+      });
+      if (error) throw error;
+  
+      setProjects(projects.filter(p => p.id !== projectId));
+      toast({ title: "Deleted", description: "Project soft-deleted." });
+    } catch (error: any) {
+      toast({ title: "Delete failed", description: error.message, variant: "destructive" });
+    } finally {
+      setConfirmDeleteId(null);
+    }
+  }
+  async function handleSaveEdit(updates: Partial<Project>) {
+    if (!editProject) return;
+    const { error } = await db.projects.update(editProject.id, updates);
+    if (!error) {
+      toast({ title: "Updated", description: "Project updated successfully." });
+      loadProjects(); // Refresh list
+    } else {
+      toast({ title: "Update failed", description: error.message, variant: "destructive" });
+    }
+    setEditProject(null);
+  }
+  
 
   if (loading) {
     return (
@@ -131,12 +165,19 @@ export default function AdminProjectsPage() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      {new Date(project.created_at).toLocaleDateString()}
+                      {new Date(project.created_at).toLocaleDateString("en-GB")}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="outline" size="sm">
-                        View Details
-                      </Button>
+                    <Button variant="outline" size="sm" className="mr-2" onClick={() => setEditProject(project)}>
+                      Edit
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => setConfirmDeleteId(project.id)}
+                    >
+                      Delete
+                    </Button>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -151,6 +192,32 @@ export default function AdminProjectsPage() {
         onOpenChange={setShowAddDialog}
         onSuccess={loadProjects}
       />
+      {confirmDeleteId && (
+        <ConfirmDialog
+          open={!!confirmDeleteId}
+          onCancel={() => setConfirmDeleteId(null)}
+          onConfirm={() => handleDeleteProject(confirmDeleteId)}
+          title="Delete Project?"
+          description="This will archive the project. You can restore it from Supabase if needed."
+        />
+      )}
+      {editProject && (
+        <EditProjectDialog
+          open={!!editProject}
+          onOpenChange={() => setEditProject(null)}
+          project={{
+            id: editProject.id,
+            name: editProject.name,
+            description: editProject.description,
+            location: editProject.location,
+            status: editProject.status,
+            franchise_id: (editProject as any).franchise_id ?? null,
+            client_id: (editProject as any).client_id ?? null,
+          }}
+          onSave={handleSaveEdit}
+        />
+      )}
+
     </>
   );
 }

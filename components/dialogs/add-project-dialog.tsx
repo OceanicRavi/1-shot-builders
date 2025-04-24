@@ -38,6 +38,8 @@ export function AddProjectDialog({ open, onOpenChange, onSuccess }: AddProjectDi
       description: "",
       location: "",
       status: "planning",
+      franchiseId: "",
+      clientId: "",
     },
   });
 
@@ -49,8 +51,8 @@ export function AddProjectDialog({ open, onOpenChange, onSuccess }: AddProjectDi
         description: values.description,
         location: values.location,
         status: values.status,
-        franchise_id: values.franchiseId,
-        client_id: values.clientId,
+        franchise_id: values.franchiseId || null,
+        client_id: values.clientId || null,
         created_by: null,
       });
 
@@ -84,6 +86,7 @@ export function AddProjectDialog({ open, onOpenChange, onSuccess }: AddProjectDi
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {/* Name */}
             <FormField
               control={form.control}
               name="name"
@@ -98,6 +101,7 @@ export function AddProjectDialog({ open, onOpenChange, onSuccess }: AddProjectDi
               )}
             />
             
+            {/* Description */}
             <FormField
               control={form.control}
               name="description"
@@ -115,7 +119,8 @@ export function AddProjectDialog({ open, onOpenChange, onSuccess }: AddProjectDi
                 </FormItem>
               )}
             />
-            
+
+            {/* Location */}
             <FormField
               control={form.control}
               name="location"
@@ -129,7 +134,8 @@ export function AddProjectDialog({ open, onOpenChange, onSuccess }: AddProjectDi
                 </FormItem>
               )}
             />
-            
+
+            {/* Status */}
             <FormField
               control={form.control}
               name="status"
@@ -152,7 +158,38 @@ export function AddProjectDialog({ open, onOpenChange, onSuccess }: AddProjectDi
                 </FormItem>
               )}
             />
-            
+
+            {/* Franchise ID (optional) */}
+            <FormField
+              control={form.control}
+              name="franchiseId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Franchise ID (optional)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter franchise ID or leave blank" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Client ID (optional) */}
+            <FormField
+              control={form.control}
+              name="clientId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Client ID (optional)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter client ID or leave blank" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Footer */}
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
