@@ -12,13 +12,17 @@ import { Loader2, Search, UserPlus } from "lucide-react";
 import { roleToLabel } from "@/lib/utils";
 import { db } from "@/lib/services/database";
 import { AddUserDialog } from "@/components/dialogs/add-user-dialog";
+import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
+import { EditUserDialog } from "@/components/dialogs/edit-user-dialog";
 
 interface User {
   id: string;
   email: string;
   full_name: string;
+  phone: string;
   role: string;
   created_at: string;
+  deleted_at?: string | null;
 }
 
 export default function AdminUsersPage() {
@@ -27,6 +31,9 @@ export default function AdminUsersPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState<null | string>(null);
+  const [editUser, setEditUser] = useState<null | User>(null);
+
   const { toast } = useToast();
   const router = useRouter();
 
@@ -42,7 +49,10 @@ export default function AdminUsersPage() {
         const searchLower = searchTerm.toLowerCase();
         filteredUsers = filteredUsers.filter(user => 
           user.email.toLowerCase().includes(searchLower) ||
-          user.full_name.toLowerCase().includes(searchLower)
+          (user.full_name?.toLowerCase() || "").includes(searchLower) ||
+          (user.phone?.toLowerCase() || "").includes(searchLower) ||
+          user.role.toLowerCase().includes(searchLower) ||
+          user.created_at.toLowerCase().includes(searchLower)
         );
       }
 
@@ -90,6 +100,65 @@ export default function AdminUsersPage() {
       });
     }
   }
+
+  async function handleDeleteUser(userId: string) {
+    try {
+      const { error } = await db.users.update(userId, {
+        deleted_at: new Date().toISOString(),
+      });
+  
+      if (error) throw error;
+  
+      setUsers(users.filter(user => user.id !== userId));
+  
+      toast({
+        title: "User deleted",
+        description: "The user has been soft-deleted.",
+      });
+    } catch (error: any) {
+      console.error("Error deleting user:", error);
+      toast({
+        title: "Error deleting user",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setConfirmDelete(null);
+    }
+  }
+  
+  async function handleEditSave(data: { full_name: string; phone: string }) {
+    if (!editUser) return;
+  
+    try {
+      const { error } = await db.users.update(editUser.id, {
+        full_name: data.full_name,
+        phone: data.phone,
+      });
+  
+      if (error) throw error;
+  
+      setUsers(users.map(user =>
+        user.id === editUser.id
+          ? { ...user, full_name: data.full_name, phone: data.phone }
+          : user
+      ));
+  
+      toast({
+        title: "User updated",
+        description: "User details updated successfully.",
+      });
+    } catch (error: any) {
+      console.error("Error updating user:", error);
+      toast({
+        title: "Update failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setEditUser(null);
+    }
+  }  
 
   if (loading) {
     return (
@@ -146,6 +215,7 @@ export default function AdminUsersPage() {
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead>Email</TableHead>
+                  <TableHead>Phone</TableHead>
                   <TableHead>Role</TableHead>
                   <TableHead>Joined</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
@@ -156,6 +226,7 @@ export default function AdminUsersPage() {
                   <TableRow key={user.id}>
                     <TableCell>{user.full_name}</TableCell>
                     <TableCell>{user.email}</TableCell>
+                    <TableCell>{user.phone}</TableCell>
                     <TableCell>
                     <Select
                       value={user.role}
@@ -177,12 +248,24 @@ export default function AdminUsersPage() {
                       </Select>
                     </TableCell>
                     <TableCell>
-                      {new Date(user.created_at).toLocaleDateString()}
+                      {new Date(user.created_at).toLocaleDateString("en-GB")}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="outline" size="sm">
-                        View Details
-                      </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="mr-2"
+                      onClick={() => setEditUser(user)}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => setConfirmDelete(user.id)}
+                    >
+                      Delete
+                    </Button>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -197,6 +280,23 @@ export default function AdminUsersPage() {
         onOpenChange={setShowAddDialog}
         onSuccess={loadUsers}
       />
+      {confirmDelete && (
+        <ConfirmDialog
+          open={!!confirmDelete}
+          onCancel={() => setConfirmDelete(null)}
+          onConfirm={() => handleDeleteUser(confirmDelete)}
+          title="Delete User?"
+          description="Are you sure you want to delete this user? This action is reversible."
+        />
+      )}
+      {editUser && (
+        <EditUserDialog
+          open={!!editUser}
+          onOpenChange={() => setEditUser(null)}
+          user={editUser}
+          onSave={handleEditSave}
+        />
+      )}
     </>
   );
 }

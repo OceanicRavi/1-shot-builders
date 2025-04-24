@@ -51,7 +51,8 @@ export const db = {
     list: async () => {
       const { data, count, error } = await supabase
         .from('users')
-        .select('*', { count: 'exact' });
+        .select('*', { count: 'exact' })
+        .is("deleted_at", null);
       return { data, count, error };
     },
     update: async (id: string, updates: Partial<Database['public']['Tables']['users']['Update']>) => {
