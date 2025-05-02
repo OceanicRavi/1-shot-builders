@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -37,6 +37,19 @@ export function UploadFileDialog({ open, onOpenChange, onSuccess }: UploadFileDi
   const [projects, setProjects] = useState<any[]>([]);
   const { toast } = useToast();
 
+  useEffect(() => {
+    const fetchProjects = async () => {
+      const { data, error } = await db.projects.list();
+      if (error) {
+        console.error("Error fetching projects:", error.message);
+      } else {
+        setProjects(data || []);
+      }
+    };
+  
+    fetchProjects();
+  }, []);
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -80,41 +93,54 @@ export function UploadFileDialog({ open, onOpenChange, onSuccess }: UploadFileDi
     setIsSubmitting(true);
 
     try {
-
-      // Upload files to Supabase Storage
+      console.log("Getting Supabase session...");
+      const { data: userData } = await db.auth.getSession();
+      console.log("Session data:", userData);
+    
       for (const file of uploadedFiles) {
         const fileExt = file.name.split('.').pop();
         const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
         const filePath = `${values.projectId}/${fileName}`;
-
-        // Upload to Supabase Storage
+    
+        console.log(`Uploading file to Supabase Storage at path: ${filePath}`);
         const { data: storageData, error: storageError } = await db.storage
           .from('project-files')
           .upload(filePath, file);
-
-        if (storageError) throw storageError;
-
-        // Get public URL
-        const { data: { publicUrl } } = db.storage
+    
+        if (storageError) {
+          console.error("Storage upload error (403?)", storageError);
+          throw storageError;
+        }
+    
+        console.log("Getting public URL for uploaded file...");
+        const { data: publicData } = await db.storage
           .from('project-files')
           .getPublicUrl(filePath);
-
-        // Create upload record
+    
+        const publicUrl = publicData?.publicUrl;
+        console.log("Public URL:", publicUrl);
+    
+        console.log("Inserting upload record into database...");
         const { error: uploadError } = await db.uploads.create({
           project_id: values.projectId,
           file_url: publicUrl,
           file_type: values.fileType,
-          uploaded_by: '',
+          uploaded_by: userData.session?.user.id ?? '',
         });
-
-        if (uploadError) throw uploadError;
+    
+        if (uploadError) {
+          console.error("Upload DB insert error (403?)", uploadError);
+          throw uploadError;
+        }
+    
+        console.log("File uploaded and DB record created successfully.");
       }
-
+    
       toast({
         title: "Files uploaded successfully",
         description: "The files have been uploaded and are pending approval.",
       });
-
+    
       form.reset();
       setUploadedFiles([]);
       onOpenChange(false);
@@ -129,6 +155,7 @@ export function UploadFileDialog({ open, onOpenChange, onSuccess }: UploadFileDi
     } finally {
       setIsSubmitting(false);
     }
+    
   }
 
   return (

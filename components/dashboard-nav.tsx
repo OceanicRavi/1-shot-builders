@@ -39,7 +39,7 @@ export function DashboardNav({ role }: DashboardNavProps) {
       icon: FileText
     },
     {
-      title: "Approve Uploads",
+      title: "Project Uploads",
       href: "/admin/files",
       icon: Upload
     },
