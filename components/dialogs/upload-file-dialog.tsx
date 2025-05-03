@@ -6,6 +6,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Upload, X } from "lucide-react";
 import { db } from "@/lib/services/database";
@@ -23,6 +25,8 @@ const ACCEPTED_FILE_TYPES = {
 const formSchema = z.object({
   projectId: z.string().min(1, "Project is required"),
   fileType: z.enum(["image", "video", "document"]),
+  title: z.string().min(2, "Title must be at least 2 characters"),
+  description: z.string().optional(),
 });
 
 interface UploadFileDialogProps {
@@ -54,6 +58,8 @@ export function UploadFileDialog({ open, onOpenChange, onSuccess }: UploadFileDi
     resolver: zodResolver(formSchema),
     defaultValues: {
       fileType: "document",
+      title: "",
+      description: "",
     },
   });
 
@@ -62,6 +68,11 @@ export function UploadFileDialog({ open, onOpenChange, onSuccess }: UploadFileDi
     maxSize: MAX_FILE_SIZE,
     onDrop: (acceptedFiles) => {
       setUploadedFiles(prev => [...prev, ...acceptedFiles]);
+      // Set title to first file name by default
+      if (acceptedFiles.length > 0) {
+        const fileName = acceptedFiles[0].name.split('.').slice(0, -1).join('.');
+        form.setValue('title', fileName);
+      }
     },
     onDropRejected: (fileRejections) => {
       fileRejections.forEach(({ file, errors }) => {
@@ -93,47 +104,40 @@ export function UploadFileDialog({ open, onOpenChange, onSuccess }: UploadFileDi
     setIsSubmitting(true);
 
     try {
-      console.log("Getting Supabase session...");
       const { data: userData } = await db.auth.getSession();
-      console.log("Session data:", userData);
     
       for (const file of uploadedFiles) {
         const fileExt = file.name.split('.').pop();
         const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
         const filePath = `${values.projectId}/${fileName}`;
     
-        console.log(`Uploading file to Supabase Storage at path: ${filePath}`);
         const { data: storageData, error: storageError } = await db.storage
           .from('project-files')
           .upload(filePath, file);
     
         if (storageError) {
-          console.error("Storage upload error (403?)", storageError);
           throw storageError;
         }
     
-        console.log("Getting public URL for uploaded file...");
         const { data: publicData } = await db.storage
           .from('project-files')
           .getPublicUrl(filePath);
     
         const publicUrl = publicData?.publicUrl;
-        console.log("Public URL:", publicUrl);
     
-        console.log("Inserting upload record into database...");
         const { error: uploadError } = await db.uploads.create({
           project_id: values.projectId,
           file_url: publicUrl,
           file_type: values.fileType,
           uploaded_by: userData.session?.user.id ?? '',
+          title: values.title,
+          description: values.description || null,
+          original_name: file.name,
         });
     
         if (uploadError) {
-          console.error("Upload DB insert error (403?)", uploadError);
           throw uploadError;
         }
-    
-        console.log("File uploaded and DB record created successfully.");
       }
     
       toast({
@@ -155,7 +159,6 @@ export function UploadFileDialog({ open, onOpenChange, onSuccess }: UploadFileDi
     } finally {
       setIsSubmitting(false);
     }
-    
   }
 
   return (
@@ -184,29 +187,6 @@ export function UploadFileDialog({ open, onOpenChange, onSuccess }: UploadFileDi
                           {project.name}
                         </SelectItem>
                       ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="fileType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>File Type</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select file type" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="document">Document</SelectItem>
-                      <SelectItem value="image">Image</SelectItem>
-                      <SelectItem value="video">Video</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -257,6 +237,61 @@ export function UploadFileDialog({ open, onOpenChange, onSuccess }: UploadFileDi
                 ))}
               </div>
             )}
+
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Title</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter file title" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea 
+                      placeholder="Enter file description (optional)"
+                      className="resize-none"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="fileType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>File Type</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select file type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="document">Document</SelectItem>
+                      <SelectItem value="image">Image</SelectItem>
+                      <SelectItem value="video">Video</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

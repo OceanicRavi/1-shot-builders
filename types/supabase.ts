@@ -154,6 +154,9 @@ export interface Database {
           is_public: boolean
           created_at: string
           updated_at: string
+          title?: string
+          description?: string | null
+          original_name?: string
         }
         Insert: {
           id?: string
@@ -165,6 +168,9 @@ export interface Database {
           is_public?: boolean
           created_at?: string
           updated_at?: string
+          title?: string
+          description?: string | null
+          original_name?: string
         }
         Update: {
           id?: string
@@ -176,6 +182,9 @@ export interface Database {
           is_public?: boolean
           created_at?: string
           updated_at?: string
+          title?: string
+          description?: string
+          original_name?: string
         }
       }
       audit_logs: {

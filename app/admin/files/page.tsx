@@ -2,18 +2,23 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
+  CardDescription,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Upload, Check, X, Pencil, Globe } from "lucide-react";
+import { Loader2, Upload, Check, X, FileText, Video, Image as ImageIcon, Globe, Download } from "lucide-react";
 import { db } from "@/lib/services/database";
 import { UploadFileDialog } from "@/components/dialogs/upload-file-dialog";
 import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 
 interface FileUpload {
   id: string;
@@ -24,12 +29,22 @@ interface FileUpload {
   created_at: string;
   is_public: boolean;
   approved_by: string | null;
+  title: string;
+  description: string | null;
+  original_name: string;
   projects?: { name: string };
   users?: { email: string };
 }
 
+interface GroupedUploads {
+  [projectId: string]: {
+    projectName: string;
+    files: FileUpload[];
+  };
+}
+
 export default function AdminFilesPage() {
-  const [uploads, setUploads] = useState<FileUpload[]>([]);
+  const [uploads, setUploads] = useState<GroupedUploads>({});
   const [loading, setLoading] = useState(true);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const { toast } = useToast();
@@ -39,7 +54,21 @@ export default function AdminFilesPage() {
     try {
       const { data, error } = await db.uploads.list();
       if (error) throw error;
-      setUploads(data || []);
+
+      // Group uploads by project
+      const grouped = (data || []).reduce<GroupedUploads>((acc, upload) => {
+        const projectId = upload.project_id;
+        if (!acc[projectId]) {
+          acc[projectId] = {
+            projectName: upload.projects?.name || "Unknown Project",
+            files: [],
+          };
+        }
+        acc[projectId].files.push(upload);
+        return acc;
+      }, {});
+
+      setUploads(grouped);
     } catch (error: any) {
       toast({
         title: "Error loading uploads",
@@ -51,21 +80,36 @@ export default function AdminFilesPage() {
     }
   }
 
+  useEffect(() => {
+    loadUploads();
+  }, []);
+
   async function updateFile(id: string, update: Partial<FileUpload>) {
     try {
-      if (
-        update.file_type &&
-        !["image", "video", "document"].includes(update.file_type)
-      ) {
-        throw new Error("Invalid file_type");
+      const { data: { session }, error: sessionError } = await db.auth.getSession();
+      if (sessionError) throw sessionError;
+
+      if (!session?.user?.id && update.approved_by !== null) {
+        throw new Error("User must be logged in to approve files");
+      }
+
+      if ('approved_by' in update) {
+        update.approved_by = update.approved_by ? session?.user?.id : null;
       }
 
       const { error } = await db.uploads.update(id, update);
       if (error) throw error;
 
-      setUploads((prev) =>
-        prev.map((u) => (u.id === id ? { ...u, ...update } : u))
-      );
+      // Update the local state directly instead of reloading
+      setUploads(prevUploads => {
+        const newUploads = { ...prevUploads };
+        Object.keys(newUploads).forEach(projectId => {
+          newUploads[projectId].files = newUploads[projectId].files.map(file => 
+            file.id === id ? { ...file, ...update } : file
+          );
+        });
+        return newUploads;
+      });
     } catch (error: any) {
       toast({
         title: "Error updating file",
@@ -75,9 +119,18 @@ export default function AdminFilesPage() {
     }
   }
 
-  useEffect(() => {
-    loadUploads();
-  }, []);
+  const FileTypeIcon = ({ type }: { type: string }) => {
+    switch (type) {
+      case "image":
+        return <ImageIcon className="h-5 w-5 text-blue-500" />;
+      case "video":
+        return <Video className="h-5 w-5 text-purple-500" />;
+      case "document":
+        return <FileText className="h-5 w-5 text-orange-500" />;
+      default:
+        return <FileText className="h-5 w-5 text-gray-500" />;
+    }
+  };
 
   if (loading) {
     return (
@@ -91,91 +144,101 @@ export default function AdminFilesPage() {
     <>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold">File Approvals</h1>
+          <h1 className="text-2xl font-bold">File Management</h1>
           <p className="text-muted-foreground text-sm">
-            Review, approve, and manage uploaded files
+            Manage and organize project files
           </p>
         </div>
         <Button onClick={() => setShowUploadDialog(true)}>
           <Upload className="mr-2 h-4 w-4" />
-          Upload File
+          Upload Files
         </Button>
       </div>
 
-      <div className="grid gap-4">
-        {uploads.map((upload) => (
-          <Card key={upload.id} className="p-2">
-            <div className="flex justify-between items-start px-4 pt-3">
-              <div className="space-y-1">
-                <h3 className="font-semibold">{upload.projects?.name}</h3>
-                <p className="text-xs text-muted-foreground">
-                  {upload.users?.email} •{" "}
-                  {new Date(upload.created_at).toLocaleDateString()}
-                </p>
-                <p className="text-sm mt-1 font-medium break-all">
-                  {upload.file_url.split("/").pop()}
-                </p>
-              </div>
-              <div className="flex gap-2 items-center">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => window.open(upload.file_url, "_blank")}
-                >
-                  Preview
-                </Button>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={() =>
-                    promptEdit(upload.id, upload.file_url, upload.file_type)
-                  }
-                >
-                  <Pencil className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
+      <div className="grid gap-6">
+        {Object.entries(uploads).map(([projectId, { projectName, files }]) => (
+          <Card key={projectId}>
+            <CardHeader>
+              <CardTitle>{projectName}</CardTitle>
+              <CardDescription>
+                {files.length} file{files.length !== 1 ? "s" : ""} uploaded
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-[300px] pr-4">
+                <div className="space-y-4">
+                  {files.map((file) => (
+                    <div
+                      key={file.id}
+                      className="flex items-start space-x-4 p-4 rounded-lg border bg-card"
+                    >
+                      <div className="shrink-0">
+                        <FileTypeIcon type={file.file_type} />
+                      </div>
+                      
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-sm font-semibold truncate">
+                            {file.title || file.original_name}
+                          </h4>
+                          <Badge variant="outline" className="text-xs">
+                            {file.file_type}
+                          </Badge>
+                        </div>
+                        
+                        {file.description && (
+                          <p className="text-sm text-muted-foreground mt-1">
+                            {file.description}
+                          </p>
+                        )}
+                        
+                        <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+                          <span>
+                            Uploaded by: {file.users?.email}
+                          </span>
+                          <span>
+                            {new Date(file.created_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
 
-            <CardContent className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2 pb-3 text-sm">
-              <div className="flex items-center">
-                <span className="flex items-center gap-1 text-muted-foreground">
-                  <Check className="w-4 h-4" />
-                  Approved : 
-                </span>
-                <Switch
-                  checked={!!upload.approved_by}
-                  onCheckedChange={(checked) =>
-                    updateFile(upload.id, {
-                      approved_by: checked ? "approved" : null,
-                    })
-                  }
-                />
-              </div>
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-muted-foreground">Public</span>
+                          <Switch
+                            checked={file.is_public}
+                            onCheckedChange={(checked) =>
+                              updateFile(file.id, { is_public: checked })
+                            }
+                          />
+                        </div>
 
-              <div className="flex items-center">
-                <span className="flex items-center gap-1 text-muted-foreground">
-                  <Globe className="w-4 h-4" />
-                  Public : 
-                </span>
-                <Switch
-                  checked={upload.is_public}
-                  onCheckedChange={(checked) =>
-                    updateFile(upload.id, { is_public: checked })
-                  }
-                />
-              </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-muted-foreground">Approved</span>
+                          <Switch
+                            checked={!!file.approved_by}
+                            onCheckedChange={(checked) =>
+                              updateFile(file.id, { approved_by: checked ? true : null })
+                            }
+                            className={cn(
+                              "data-[state=checked]:bg-green-500",
+                              "data-[state=checked]:hover:bg-green-500"
+                            )}
+                          />
+                        </div>
 
-              <div className="flex items-center">
-                <span className="text-muted-foreground">Type : </span>
-                <span>{upload.file_type}</span>
-              </div>
-
-              <div className="flex items-center">
-                <span className="text-muted-foreground">Status : </span>
-                <span>
-                  {upload.approved_by ? "Approved" : "Rejected"}
-                </span>
-              </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => window.open(file.file_url, "_blank")}
+                        >
+                          <Download className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
             </CardContent>
           </Card>
         ))}
@@ -188,17 +251,4 @@ export default function AdminFilesPage() {
       />
     </>
   );
-
-  function promptEdit(id: string, url: string, type: string) {
-    const newUrl = prompt("Enter new file URL:", url);
-    if (!newUrl) return;
-
-    const newType = prompt("Enter new file type (image/video/document):", type);
-    if (!newType) return;
-
-    updateFile(id, {
-      file_url: newUrl,
-      file_type: newType as FileUpload["file_type"],
-    });
-  }
 }
