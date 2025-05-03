@@ -131,7 +131,7 @@ export function UploadFileDialog({ open, onOpenChange, onSuccess }: UploadFileDi
           file_type: values.fileType,
           uploaded_by: userData.session?.user.id ?? '',
           title: values.title,
-          description: values.description || null,
+          description: values.description,
           original_name: file.name,
         });
     

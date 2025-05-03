@@ -218,7 +218,7 @@ export default function AdminFilesPage() {
                           <Switch
                             checked={!!file.approved_by}
                             onCheckedChange={(checked) =>
-                              updateFile(file.id, { approved_by: checked ? true : null })
+                              updateFile(file.id, { approved_by: checked ? 'pending' : null })
                             }
                             className={cn(
                               "data-[state=checked]:bg-green-500",

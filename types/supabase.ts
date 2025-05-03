@@ -183,7 +183,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
           title?: string
-          description?: string
+          description?: string | null
           original_name?: string
         }
       }
