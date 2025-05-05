@@ -35,7 +35,7 @@ export default function AboutPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
-      
+
       {/* Hero Section */}
       <section className="relative">
         <div className="absolute inset-0 z-0">
@@ -59,7 +59,7 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-      
+
       {/* Our Story Section */}
       <section className="py-20">
         <div className="container">
@@ -75,7 +75,7 @@ export default function AboutPage() {
             <div>
               <h2 className="text-3xl font-bold tracking-tight mb-6">Our Story</h2>
               <p className="text-muted-foreground mb-4">
-                1ShotBuilders was founded in 2010 with a simple yet powerful vision: to deliver construction and renovation projects with precision and excellence—in one shot. 
+                1ShotBuilders was founded in 2010 with a simple yet powerful vision: to deliver construction and renovation projects with precision and excellence—in one shot.
               </p>
               <p className="text-muted-foreground mb-4">
                 Our founder, John Smith, began his career as a carpenter and quickly developed a reputation for his attention to detail and commitment to quality. After years of working for various construction companies, John identified a gap in the market for a construction firm that truly prioritized client satisfaction and quality craftsmanship.
@@ -90,7 +90,7 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-      
+
       {/* Vision & Mission Section */}
       <section className="py-20 bg-muted">
         <div className="container">
@@ -98,7 +98,7 @@ export default function AboutPage() {
             <h2 className="text-3xl font-bold tracking-tight mb-4">Our Vision & Mission</h2>
             <Separator className="mx-auto w-24 bg-primary h-1 mb-6" />
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <Card className="border-2 border-primary/20">
               <CardHeader className="text-center">
@@ -110,7 +110,7 @@ export default function AboutPage() {
                 </p>
               </CardContent>
             </Card>
-            
+
             <Card className="border-2 border-primary/20">
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl">Our Mission</CardTitle>
@@ -122,7 +122,7 @@ export default function AboutPage() {
               </CardContent>
             </Card>
           </div>
-          
+
           <div className="mt-16">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <Card>
@@ -136,7 +136,7 @@ export default function AboutPage() {
                   </p>
                 </CardContent>
               </Card>
-              
+
               <Card>
                 <CardHeader className="text-center">
                   <Users className="h-10 w-10 text-primary mx-auto mb-2" />
@@ -148,7 +148,7 @@ export default function AboutPage() {
                   </p>
                 </CardContent>
               </Card>
-              
+
               <Card>
                 <CardHeader className="text-center">
                   <Award className="h-10 w-10 text-primary mx-auto mb-2" />
@@ -164,7 +164,7 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-      
+
       {/* Team Section */}
       <section className="py-20">
         <div className="container">
@@ -174,7 +174,7 @@ export default function AboutPage() {
               Meet the experienced professionals who lead 1ShotBuilders with expertise and vision.
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {team.map((member, index) => (
               <Card key={index} className="overflow-hidden">
@@ -198,7 +198,7 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-      
+
       {/* Certifications Section */}
       <section className="py-20 bg-muted">
         <div className="container">
@@ -208,7 +208,7 @@ export default function AboutPage() {
               1ShotBuilders maintains the highest industry standards through professional certifications and memberships.
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {certifications.map((cert, index) => (
               <Card key={index} className="text-center">
@@ -221,7 +221,7 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-      
+
       {/* Why Choose Us Section */}
       <section className="py-20">
         <div className="container">
@@ -231,7 +231,7 @@ export default function AboutPage() {
               <p className="text-muted-foreground mb-8">
                 Choosing the right construction partner is crucial for your project's success. Here's why clients across New Zealand trust 1ShotBuilders:
               </p>
-              
+
               <ul className="space-y-4">
                 <li className="flex items-start">
                   <CheckCircle2 className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
@@ -269,14 +269,14 @@ export default function AboutPage() {
                   </div>
                 </li>
               </ul>
-              
+
               <div className="mt-8">
                 <Button asChild>
                   <Link href="/contact">Contact Us</Link>
                 </Button>
               </div>
             </div>
-            
+
             <div className="relative aspect-square rounded-lg overflow-hidden">
               <Image
                 src="https://images.pexels.com/photos/8961116/pexels-photo-8961116.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
@@ -288,7 +288,7 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-      
+
       {/* CTA Section */}
       <section className="py-16 bg-primary text-primary-foreground">
         <div className="container text-center">
@@ -306,7 +306,7 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-      
+
       <SiteFooter />
     </div>
   );

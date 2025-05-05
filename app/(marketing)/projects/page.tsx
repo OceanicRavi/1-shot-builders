@@ -18,22 +18,32 @@ const projects = [
     "title": "Modern Family Makeover",
     "address": "Rata St, New Lynn",
     "description": "This complete home renovation brought a fresh, modern look to a family home in New Lynn. The kitchen and bathroom were fully tiled with elegant finishes, while the rest of the house received a professional interior repaint, enhancing brightness and space. The transformation balanced style with functionality, perfect for a growing family.",
-    "image": "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "image": "/images/projects/1/IMG_9679.jpg",
     "category": "renovations",
     "status": "completed",
     "location": "New Lynn, Auckland",
-    "tags": ["Residential", "Renovation", "Kitchen", "Bathroom", "Painting"]
+    "tags": ["Residential", "Renovation", "Kitchen", "Bathroom", "Painting"],
+    "images": [
+      "/images/projects/1/IMG_9679.jpg",
+      "/images/projects/1/IMG_9680.jpg"
+    ]
   },
   {
     "id": 2,
     "title": "Stylish Bathroom Refresh",
     "address": "Dominion Road",
     "description": "A compact bathroom was transformed into a sleek retreat with modern aesthetics. High-end wall and floor tiles, minimalist cabinetry, and a frameless shower enclosure turned this functional space into a spa-like oasis, ideal for both relaxation and everyday practicality.",
-    "image": "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "image": "/images/projects/2/1.JPG",
     "category": "renovations",
     "status": "completed",
     "location": "Hillsborough, Auckland",
-    "tags": ["Residential", "Renovation", "Bathroom"]
+    "tags": ["Residential", "Renovation", "Bathroom"],
+    "images": [
+      "/images/projects/2/1.JPG",
+      "/images/projects/2/2.JPG",
+      "/images/projects/2/3.JPG",
+      "/images/projects/2/4.JPG"
+    ]
   },
   {
     "id": 3,
@@ -51,33 +61,51 @@ const projects = [
     "title": "Luxury Kitchen Revamp ",
     "address": "Blockhouse Bay Road",
     "description": "A small kitchen space was elevated with luxurious finishes and smart design choices. Premium tiles, sleek cabinetry, and innovative storage solutions gave the space a contemporary feel without sacrificing functionality. The transformation brought a designer kitchen look to a compact home.",
-    "image": "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "image": "/images/projects/4/1.jpg",
     "category": "renovations",
     "status": "completed",
     "location": "Blockhouse Bay, Auckland",
-    "tags": ["Residential", "Renovation", "Kitchen"]
+    "tags": ["Residential", "Renovation", "Kitchen"],
+    "images": [
+      "/images/projects/4/1.jpg",
+      "/images/projects/4/2.jpg",
+      "/images/projects/4/3.jpg",
+      "/images/projects/4/4.jpg",
+      "/images/projects/4/5.jpg"
+    ]
   },
   {
     "id": 5,
     "title": "Custom Dream Home",
     "address": "20 Keats Place, Blockhouse Bay",
     "description": "A newly constructed, custom-designed 5-bedroom family home that reflects both elegance and functionality. The property includes spacious open-plan living areas, a gourmet kitchen with island bench, and four luxurious bathrooms. Every detail was designed to suit modern family lifestyles.",
-    "image": "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "image": "/images/projects/5/1.jpg",
     "category": "new-builds",
     "status": "completed",
     "location": "Blockhouse Bay, Auckland",
-    "tags": ["Residential", "New Build", "Kitchen", "Bathroom", "Living Room"]
+    "tags": ["Residential", "New Build", "Kitchen", "Bathroom", "Living Room"],
+    "images": [
+      "/images/projects/5/1.jpg",
+      "/images/projects/5/2.jpg",
+      "/images/projects/5/3.jpg",
+      "/images/projects/5/4.jpg"
+    ]
   },
   {
     "id": 6,
     "title": "Total Transformation with Outdoor Living",
     "address": "Takanini",
     "description": "A full-scale renovation that redefined the entire home layout. Modern bathrooms, an open-plan kitchen, and a newly constructed deck added value and liveability. The large outdoor space was designed for family gatherings, creating a home that works inside and out.",
-    "image": "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "image": "/images/projects/6/1.JPG",
     "category": "renovations",
     "status": "completed",
     "location": "Takanini, Auckland",
-    "tags": ["Residential", "Renovation", "Deck", "Kitchen", "Bathroom", "Living Room"]
+    "tags": ["Residential", "Renovation", "Deck", "Kitchen", "Bathroom", "Living Room"],
+    "images": [
+      "/images/projects/6/1.JPG",
+      "/images/projects/6/2.jpg",
+      "/images/projects/6/3.JPG"
+    ]
   },
   {
     "id": 7,
@@ -95,11 +123,16 @@ const projects = [
     "title": "Dual Living Elegance",
     "address": "10 Maui Pomare St, Blockhouse Bay",
     "description": "An in progress project to build dual modern units, each offering three bedrooms, two bathrooms, and open-concept kitchen-living areas. Designed with growing families in mind, this project aims to deliver low-maintenance, high-quality homes in a prime suburban location.",
-    "image": "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "image": "/images/projects/8/1.jpg",
     "category": "new-builds",
     "status": "in_progress",
     "location": "Blockhouse Bay, Auckland",
-    "tags": ["Residential", "New Build", "Kitchen", "Bathroom", "Lounge"]
+    "tags": ["Residential", "New Build", "Kitchen", "Bathroom", "Lounge"],
+    "images": [
+      "/images/projects/8/1.jpg",
+      "/images/projects/8/2.jpg",
+      "/images/projects/8/3.jpg"
+    ]
   },
   {
     "id": 9,
@@ -130,27 +163,27 @@ export default function ProjectsPage() {
   const [activeStatus, setActiveStatus] = useState("all");
   const [filteredProjects, setFilteredProjects] = useState(projects);
   const [selectedProject, setSelectedProject] = useState<any>(null);
-  
+
 
   const filterProjects = (category: string, status: string) => {
     let filtered = [...projects];
-    
+
     if (category !== "all") {
       filtered = filtered.filter(project => project.category === category);
     }
-    
+
     if (status !== "all") {
       filtered = filtered.filter(project => project.status === status);
     }
-    
+
     setFilteredProjects(filtered);
   };
-  
+
   const handleTabChange = (value: string) => {
     setActiveTab(value);
     filterProjects(value, activeStatus);
   };
-  
+
   const handleStatusChange = (value: string) => {
     setActiveStatus(value);
     filterProjects(activeTab, value);
@@ -159,7 +192,7 @@ export default function ProjectsPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
-      
+
       <section className="relative">
         <div className="absolute inset-0 z-0">
           <Image
@@ -182,7 +215,7 @@ export default function ProjectsPage() {
           </div>
         </div>
       </section>
-      
+
       <section className="py-20">
         <div className="container">
           <Tabs defaultValue="all" onValueChange={handleTabChange} className="w-full">
@@ -193,7 +226,7 @@ export default function ProjectsPage() {
                 <TabsTrigger value="new-builds" className="py-2 px-4">New Builds</TabsTrigger>
               </TabsList>
             </div>
-            
+
             <div className="flex justify-center mb-12">
               <Tabs defaultValue="all" onValueChange={handleStatusChange} className="w-full max-w-md">
                 <TabsList className="grid grid-cols-3 h-auto p-1">
@@ -203,36 +236,36 @@ export default function ProjectsPage() {
                 </TabsList>
               </Tabs>
             </div>
-            
+
             <TabsContent value="all" className="mt-0">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {filteredProjects.map((project) => (
-                  <ProjectCard 
-                    key={project.id} 
-                    project={project} 
-                    onViewDetails={() => setSelectedProject(project)}
-                  />
-                ))}
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="renovations" className="mt-0">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {filteredProjects.map((project) => (
-                  <ProjectCard 
-                    key={project.id} 
+                  <ProjectCard
+                    key={project.id}
                     project={project}
                     onViewDetails={() => setSelectedProject(project)}
                   />
                 ))}
               </div>
             </TabsContent>
-            
+
+            <TabsContent value="renovations" className="mt-0">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {filteredProjects.map((project) => (
+                  <ProjectCard
+                    key={project.id}
+                    project={project}
+                    onViewDetails={() => setSelectedProject(project)}
+                  />
+                ))}
+              </div>
+            </TabsContent>
+
             <TabsContent value="new-builds" className="mt-0">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {filteredProjects.map((project) => (
-                  <ProjectCard 
-                    key={project.id} 
+                  <ProjectCard
+                    key={project.id}
                     project={project}
                     onViewDetails={() => setSelectedProject(project)}
                   />
@@ -242,7 +275,7 @@ export default function ProjectsPage() {
           </Tabs>
         </div>
       </section>
-      
+
       <section className="py-16 bg-primary text-primary-foreground">
         <div className="container text-center">
           <h2 className="text-3xl font-bold tracking-tight mb-4">Have a Project in Mind?</h2>
@@ -254,7 +287,7 @@ export default function ProjectsPage() {
           </Button>
         </div>
       </section>
-      
+
       {selectedProject && (
         <ProjectDetailsModal
           project={selectedProject}
@@ -262,7 +295,7 @@ export default function ProjectsPage() {
           onClose={() => setSelectedProject(null)}
         />
       )}
-      
+
       <SiteFooter />
     </div>
   );
@@ -275,7 +308,7 @@ function ProjectCard({ project, onViewDetails }: { project: any; onViewDetails: 
     in_progress: "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300",
     planning: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
   };
-  
+
   const statusText = {
     completed: "Completed",
     in_progress: "In Progress",
@@ -283,7 +316,7 @@ function ProjectCard({ project, onViewDetails }: { project: any; onViewDetails: 
   };
 
   return (
-    <Card 
+    <Card
       className="overflow-hidden transition-all hover:shadow-xl group bg-white border-slate-200 dark:bg-slate-900 dark:border-slate-800"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -302,29 +335,29 @@ function ProjectCard({ project, onViewDetails }: { project: any; onViewDetails: 
           </Badge>
         </div>
         <div className="absolute bottom-4 left-4">
-        <h3 className="text-2xl font-bold text-white transform translate-z-0 tracking-wide" style={{
-  textShadow: "0 2px 4px rgba(0,0,0,0.8), 0 4px 12px rgba(0,0,0,0.5), 1px 1px 0 #000, -1px -1px 0 #000"
-}}>
-  <span className="bg-black bg-opacity-30 px-3 py-1 rounded backdrop-blur-sm">{project.title}</span>
-</h3>
+          <h3 className="text-2xl font-bold text-white transform translate-z-0 tracking-wide" style={{
+            textShadow: "0 2px 4px rgba(0,0,0,0.8), 0 4px 12px rgba(0,0,0,0.5), 1px 1px 0 #000, -1px -1px 0 #000"
+          }}>
+            <span className="bg-black bg-opacity-30 px-3 py-1 rounded backdrop-blur-sm">{project.title}</span>
+          </h3>
         </div>
       </div>
       <CardHeader className="pb-2">
         <div className="flex items-center space-x-2 text-sm text-slate-600 dark:text-slate-400">
-        <MapPin size={16} className="text-indigo-500 flex-shrink-0" />
-  <div className="flex-1">
-    <span className="font-medium text-indigo-600 dark:text-indigo-400">{project.address}</span>
-    {project.location && <span className="text-slate-600 dark:text-slate-400"> · <span className="text-emerald-600 dark:text-emerald-400">{project.location}</span></span>}
-  </div>
+          <MapPin size={16} className="text-indigo-500 flex-shrink-0" />
+          <div className="flex-1">
+            <span className="font-medium text-indigo-600 dark:text-indigo-400">{project.address}</span>
+            {project.location && <span className="text-slate-600 dark:text-slate-400"> · <span className="text-emerald-600 dark:text-emerald-400">{project.location}</span></span>}
+          </div>
         </div>
       </CardHeader>
       <CardContent>
         <p className="text-slate-600 dark:text-slate-400 mb-4 line-clamp-2">{project.description}</p>
         <div className="flex flex-wrap gap-2 mb-3">
           {project.tags.map((tag: string, index: number) => (
-            <Badge 
-              key={index} 
-              variant="secondary" 
+            <Badge
+              key={index}
+              variant="secondary"
               className="bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
             >
               {tag}
@@ -333,8 +366,8 @@ function ProjectCard({ project, onViewDetails }: { project: any; onViewDetails: 
         </div>
       </CardContent>
       <CardFooter className="pt-0">
-        <Button 
-          variant="default" 
+        <Button
+          variant="default"
           className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-medium group-hover:shadow-md transition-all duration-200"
           onClick={onViewDetails}
         >

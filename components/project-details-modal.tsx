@@ -17,12 +17,7 @@ interface ProjectDetailsModalProps {
 export function ProjectDetailsModal({ project, isOpen, onClose }: ProjectDetailsModalProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
-  // In a real app, these would come from your database
-  const projectImages = [
-    project.image,
-    "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg",
-    "https://images.pexels.com/photos/2102587/pexels-photo-2102587.jpeg",
-  ];
+  const projectImages = project.images || [project.image];
 
   const nextImage = () => {
     setCurrentImageIndex((prev) => 
