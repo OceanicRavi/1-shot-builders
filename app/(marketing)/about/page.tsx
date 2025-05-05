@@ -12,13 +12,13 @@ export default function AboutPage() {
     {
       name: "Mayur Kakadiya",
       role: "Founder & CEO",
-      image: "/images/personal/mayur.jpg",
+      image: "/images/personal/mayur.JPG",
       bio: "A passionate newcomer to the construction industry, Mayur combines fresh ideas with a strong entrepreneurial spirit to lead 1ShotBuilders."
     },
     {
       name: "Prashant Dholakiya",
       role: "Founder",
-      image: "/images/personal/prashant.jpg",
+      image: "/images/personal/prashant.JPG",
       bio: "Prashant brings a hands-on approach and a drive for quality, stepping confidently into the construction space with a vision for growth."
     }
   ];
