@@ -13,21 +13,13 @@ export function SiteFooter() {
               Transforming spaces, delivering dreams in one shot.
             </p>
             <div className="flex space-x-4 mb-6">
-              <Link href="https://facebook.com" className="text-muted-foreground hover:text-primary">
+              <Link href="https://facebook.com/1shotbuilders/" className="text-muted-foreground hover:text-primary">
                 <Facebook size={20} />
                 <span className="sr-only">Facebook</span>
               </Link>
-              <Link href="https://instagram.com" className="text-muted-foreground hover:text-primary">
+              <Link href="https://instagram.com/1shotbuilders/" className="text-muted-foreground hover:text-primary">
                 <Instagram size={20} />
                 <span className="sr-only">Instagram</span>
-              </Link>
-              <Link href="https://twitter.com" className="text-muted-foreground hover:text-primary">
-                <Twitter size={20} />
-                <span className="sr-only">Twitter</span>
-              </Link>
-              <Link href="https://linkedin.com" className="text-muted-foreground hover:text-primary">
-                <Linkedin size={20} />
-                <span className="sr-only">LinkedIn</span>
               </Link>
             </div>
             <div className="flex flex-row gap-1">

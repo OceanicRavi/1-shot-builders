@@ -75,16 +75,18 @@ export default function AboutPage() {
             <div>
               <h2 className="text-3xl font-bold tracking-tight mb-6">Our Story</h2>
               <p className="text-muted-foreground mb-4">
-                1ShotBuilders was founded in 2010 with a simple yet powerful vision: to deliver construction and renovation projects with precision and excellence—in one shot.
+                Founded in 2021 by Mayurkumar Kakadiya and Prashant Dholakiya, 1ShotBuilders emerged from a shared vision to redefine the construction and renovation landscape in Auckland. With a commitment to precision, quality, and client satisfaction, the duo established 1 SHOT CONSTRUCTION LIMITED, operating under the trading name Ariki Homes.
               </p>
               <p className="text-muted-foreground mb-4">
-                Our founder, John Smith, began his career as a carpenter and quickly developed a reputation for his attention to detail and commitment to quality. After years of working for various construction companies, John identified a gap in the market for a construction firm that truly prioritized client satisfaction and quality craftsmanship.
+                Mayur and Prashant, both Licensed Building Practitioners, brought together their expertise and passion for building to create a company that prioritizes excellence in every project. Their hands-on approach and dedication to craftsmanship have been instrumental in delivering projects that not only meet but exceed client expectations.
               </p>
               <p className="text-muted-foreground mb-4">
-                Starting with a small team of skilled builders, 1ShotBuilders has grown into a comprehensive construction and renovation company with a diverse team of experts in architecture, interior design, project management, and specialized trades.
+                Operating from their base in Blockhouse Bay, Auckland, 1ShotBuilders has quickly gained a reputation for transforming visions into reality. Their portfolio showcases a range of successful projects, from modern residential renovations to complex commercial builds, all executed with meticulous attention to detail.
+
+                The name "1ShotBuilders" encapsulates their philosophy: to get it right the first time. This ethos drives their team to deliver seamless experiences, ensuring that each project is completed with the utmost professionalism and integrity.
               </p>
               <p className="text-muted-foreground">
-                Today, we're proud to have completed hundreds of successful projects across New Zealand, from luxurious residential renovations to complex commercial builds. Our name—1ShotBuilders—reflects our commitment to getting it right the first time, delivering a seamless experience for our clients.
+                As they continue to grow, Mayur and Prashant remain committed to their founding principles, striving to set new standards in the construction industry and build lasting relationships with their clients.
               </p>
             </div>
           </div>
