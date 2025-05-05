@@ -10,98 +10,119 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { ProjectDetailsModal } from "@/components/project-details-modal";
+import { ChevronRight, MapPin } from "lucide-react";
 
 const projects = [
   {
-    id: 1,
-    title: "Modern Home Renovation",
-    description: "Complete renovation of a 1970s home with modern finishes and open concept design. The project included a full kitchen remodel, bathroom updates, and creating an open-plan living area. Energy-efficient appliances and sustainable materials were used throughout.",
-    image: "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-    category: "renovations",
-    status: "completed",
-    location: "Auckland",
-    tags: ["Kitchen", "Bathroom", "Residential"]
+    "id": 1,
+    "title": "Modern Family Makeover",
+    "address": "Rata St, New Lynn",
+    "description": "This complete home renovation brought a fresh, modern look to a family home in New Lynn. The kitchen and bathroom were fully tiled with elegant finishes, while the rest of the house received a professional interior repaint, enhancing brightness and space. The transformation balanced style with functionality, perfect for a growing family.",
+    "image": "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "category": "renovations",
+    "status": "completed",
+    "location": "New Lynn, Auckland",
+    "tags": ["Residential", "Renovation", "Kitchen", "Bathroom", "Painting"]
   },
   {
-    id: 2,
-    title: "Coastal Luxury Home",
-    description: "Custom-built luxury home with ocean views and sustainable design features. This beachfront property features floor-to-ceiling windows, a gourmet kitchen, and an infinity pool. Smart home technology and solar panels were integrated into the design.",
-    image: "https://images.pexels.com/photos/2102587/pexels-photo-2102587.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-    category: "new-builds",
-    status: "completed",
-    location: "Tauranga",
-    tags: ["Luxury", "Residential", "New Build"]
+    "id": 2,
+    "title": "Stylish Bathroom Refresh",
+    "address": "Dominion Road",
+    "description": "A compact bathroom was transformed into a sleek retreat with modern aesthetics. High-end wall and floor tiles, minimalist cabinetry, and a frameless shower enclosure turned this functional space into a spa-like oasis, ideal for both relaxation and everyday practicality.",
+    "image": "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "category": "renovations",
+    "status": "completed",
+    "location": "Hillsborough, Auckland",
+    "tags": ["Residential", "Renovation", "Bathroom"]
   },
   {
-    id: 3,
-    title: "Commercial Office Renovation",
-    description: "Modern office space renovation with flexible workspaces and collaborative areas. The project transformed an outdated office into a contemporary workspace with breakout areas, meeting rooms, and a staff café.",
-    image: "https://images.pexels.com/photos/1743555/pexels-photo-1743555.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-    category: "renovations",
-    status: "completed",
-    location: "Wellington",
-    tags: ["Commercial", "Office", "Renovation"]
+    "id": 3,
+    "title": "Deck & Dine Upgrade",
+    "address": "Blockhouse Bay Road",
+    "description": "This renovation combined indoor elegance with outdoor charm. A beautifully tiled kitchen was added alongside a new timber deck that opened up the dining area. It provided seamless indoor-outdoor flow, making the space ideal for hosting guests and weekend family barbecues.",
+    "image": "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "category": "renovations",
+    "status": "completed",
+    "location": "Blockhouse Bay, Auckland",
+    "tags": ["Residential", "Renovation", "Kitchen", "Deck"]
   },
   {
-    id: 4,
-    title: "Contemporary Apartment Complex",
-    description: "Multi-unit residential complex with modern amenities and urban design. This development includes 24 luxury apartments, underground parking, a fitness center, and a rooftop garden.",
-    image: "https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-    category: "new-builds",
-    status: "in_progress",
-    location: "Christchurch",
-    tags: ["Multi-Family", "Residential", "New Build"]
+    "id": 4,
+    "title": "Luxury Kitchen Revamp ",
+    "address": "Blockhouse Bay Road",
+    "description": "A small kitchen space was elevated with luxurious finishes and smart design choices. Premium tiles, sleek cabinetry, and innovative storage solutions gave the space a contemporary feel without sacrificing functionality. The transformation brought a designer kitchen look to a compact home.",
+    "image": "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "category": "renovations",
+    "status": "completed",
+    "location": "Blockhouse Bay, Auckland",
+    "tags": ["Residential", "Renovation", "Kitchen"]
   },
   {
-    id: 5,
-    title: "Historic Home Restoration",
-    description: "Careful restoration of a heritage home while adding modern conveniences. This project involved preserving original features while updating the electrical, plumbing, and HVAC systems to modern standards.",
-    image: "https://images.pexels.com/photos/4846461/pexels-photo-4846461.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-    category: "renovations",
-    status: "completed",
-    location: "Dunedin",
-    tags: ["Historical", "Residential", "Renovation"]
+    "id": 5,
+    "title": "Custom Dream Home",
+    "address": "20 Keats Place, Blockhouse Bay",
+    "description": "A newly constructed, custom-designed 5-bedroom family home that reflects both elegance and functionality. The property includes spacious open-plan living areas, a gourmet kitchen with island bench, and four luxurious bathrooms. Every detail was designed to suit modern family lifestyles.",
+    "image": "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "category": "new-builds",
+    "status": "completed",
+    "location": "Blockhouse Bay, Auckland",
+    "tags": ["Residential", "New Build", "Kitchen", "Bathroom", "Living Room"]
   },
   {
-    id: 6,
-    title: "Mountain Retreat",
-    description: "Custom holiday home with natural materials and panoramic mountain views. This luxury retreat features exposed timber beams, stone fireplaces, and large windows to capture the stunning landscape.",
-    image: "https://images.pexels.com/photos/2480608/pexels-photo-2480608.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-    category: "new-builds",
-    status: "in_progress",
-    location: "Queenstown",
-    tags: ["Residential", "New Build", "Luxury"]
+    "id": 6,
+    "title": "Total Transformation with Outdoor Living",
+    "address": "Takanini",
+    "description": "A full-scale renovation that redefined the entire home layout. Modern bathrooms, an open-plan kitchen, and a newly constructed deck added value and liveability. The large outdoor space was designed for family gatherings, creating a home that works inside and out.",
+    "image": "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "category": "renovations",
+    "status": "completed",
+    "location": "Takanini, Auckland",
+    "tags": ["Residential", "Renovation", "Deck", "Kitchen", "Bathroom", "Living Room"]
   },
   {
-    id: 7,
-    title: "Retail Store Remodel",
-    description: "Modern retail space with custom display solutions and improved customer flow. The renovation included new lighting, flooring, and a contemporary storefront design.",
-    image: "https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-    category: "renovations",
-    status: "in_progress",
-    location: "Auckland",
-    tags: ["Commercial", "Retail", "Renovation"]
+    "id": 7,
+    "title": "Compact Comfort Upgrade",
+    "address": "18 Kelman Road, Kelston",
+    "description": "A creative renovation that turned a compact house into a comfortable and stylish living space. Fresh paint, a smart studio setup, and subtle design tweaks improved flow and functionality without major structural changes, perfect for small families or renters.",
+    "image": "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "category": "renovations",
+    "status": "completed",
+    "location": "Kelston, Auckland",
+    "tags": ["Residential", "Renovation", "Studio", "Living Room", "Painting"]
   },
   {
-    id: 8,
-    title: "Eco-Friendly Family Home",
-    description: "Sustainable home with solar power, rainwater harvesting, and passive design. This environmentally conscious build maximizes natural light and ventilation while minimizing energy consumption.",
-    image: "https://images.pexels.com/photos/2587054/pexels-photo-2587054.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-    category: "new-builds",
-    status: "planning",
-    location: "Hamilton",
-    tags: ["Residential", "Eco-Friendly", "New Build"]
+    "id": 8,
+    "title": "Dual Living Elegance",
+    "address": "10 Maui Pomare St, Blockhouse Bay",
+    "description": "An in progress project to build dual modern units, each offering three bedrooms, two bathrooms, and open-concept kitchen-living areas. Designed with growing families in mind, this project aims to deliver low-maintenance, high-quality homes in a prime suburban location.",
+    "image": "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "category": "new-builds",
+    "status": "in_progress",
+    "location": "Blockhouse Bay, Auckland",
+    "tags": ["Residential", "New Build", "Kitchen", "Bathroom", "Lounge"]
   },
   {
-    id: 9,
-    title: "Kitchen Transformation",
-    description: "Complete kitchen remodel with custom cabinetry and premium appliances. The renovation created an open-concept kitchen with a large island, wine storage, and professional-grade appliances.",
-    image: "https://images.pexels.com/photos/3926542/pexels-photo-3926542.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-    category: "renovations",
-    status: "completed",
-    location: "Wellington",
-    tags: ["Kitchen", "Residential", "Renovation"]
+    "id": 9,
+    "title": "Hillside Luxury Homes",
+    "address": "553 Hillsborough Road, Mt Roskill",
+    "description": "Currently under construction, this project features multi-lot hillside residences with panoramic views. Each home includes multiple lounges, state-of-the-art kitchens, and spacious bathrooms, tailored for extended families or multi-generational living.",
+    "image": "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "category": "new-builds",
+    "status": "in_progress",
+    "location": "Mount Roskill, Auckland",
+    "tags": ["Residential", "New Build", "Kitchen", "Bathroom", "Lounge", "Living Room"]
   },
+  {
+    "id": 10,
+    "title": "Urban Family Complex",
+    "address": "4253 Great North Road, Glendene",
+    "description": "This in progress development includes five thoughtfully planned units designed for urban families. Each unit features open-plan living areas, dedicated study rooms, modern kitchens, and private outdoor spaces. A strong focus on layout and usability makes this a standout multi-unit project.",
+    "image": "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "category": "new-builds",
+    "status": "in_progress",
+    "location": "Glendene, Auckland",
+    "tags": ["Residential", "New Build", "Kitchen", "Bathroom", "Living Room", "Study"]
+  }
 ];
 
 export default function ProjectsPage() {
@@ -110,6 +131,7 @@ export default function ProjectsPage() {
   const [filteredProjects, setFilteredProjects] = useState(projects);
   const [selectedProject, setSelectedProject] = useState<any>(null);
   
+
   const filterProjects = (category: string, status: string) => {
     let filtered = [...projects];
     
@@ -155,7 +177,7 @@ export default function ProjectsPage() {
               Our Projects
             </h1>
             <p className="text-xl text-white/90">
-              Explore our portfolio of completed and ongoing construction and renovation projects.
+              Explore our portfolio of completed and in progress construction and renovation projects.
             </p>
           </div>
         </div>
@@ -247,6 +269,7 @@ export default function ProjectsPage() {
 }
 
 function ProjectCard({ project, onViewDetails }: { project: any; onViewDetails: () => void }) {
+  const [isHovered, setIsHovered] = useState(false);
   const statusColors = {
     completed: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
     in_progress: "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300",
@@ -260,39 +283,63 @@ function ProjectCard({ project, onViewDetails }: { project: any; onViewDetails: 
   };
 
   return (
-    <Card className="overflow-hidden transition-all hover:shadow-lg">
-      <div className="relative aspect-video">
+    <Card 
+      className="overflow-hidden transition-all hover:shadow-xl group bg-white border-slate-200 dark:bg-slate-900 dark:border-slate-800"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div className="relative aspect-video overflow-hidden">
         <Image
           src={project.image}
           alt={project.title}
           fill
-          className="object-cover"
+          className={`object-cover transition-transform duration-700 ${isHovered ? 'scale-110' : 'scale-100'}`}
         />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-70" />
         <div className="absolute top-4 right-4">
-          <Badge className={`${statusColors[project.status as keyof typeof statusColors]}`}>
+          <Badge className={`${statusColors[project.status as keyof typeof statusColors]} font-medium px-3 py-1 text-sm shadow-sm`}>
             {statusText[project.status as keyof typeof statusText]}
           </Badge>
         </div>
+        <div className="absolute bottom-4 left-4">
+        <h3 className="text-2xl font-bold text-white transform translate-z-0 tracking-wide" style={{
+  textShadow: "0 2px 4px rgba(0,0,0,0.8), 0 4px 12px rgba(0,0,0,0.5), 1px 1px 0 #000, -1px -1px 0 #000"
+}}>
+  <span className="bg-black bg-opacity-30 px-3 py-1 rounded backdrop-blur-sm">{project.title}</span>
+</h3>
+        </div>
       </div>
-      <CardHeader>
-        <CardTitle>{project.title}</CardTitle>
-        <div className="text-sm text-muted-foreground">{project.location}</div>
+      <CardHeader className="pb-2">
+        <div className="flex items-center space-x-2 text-sm text-slate-600 dark:text-slate-400">
+        <MapPin size={16} className="text-indigo-500 flex-shrink-0" />
+  <div className="flex-1">
+    <span className="font-medium text-indigo-600 dark:text-indigo-400">{project.address}</span>
+    {project.location && <span className="text-slate-600 dark:text-slate-400"> · <span className="text-emerald-600 dark:text-emerald-400">{project.location}</span></span>}
+  </div>
+        </div>
       </CardHeader>
       <CardContent>
-        <p className="text-muted-foreground mb-4">{project.description}</p>
-        <div className="flex flex-wrap gap-2">
+        <p className="text-slate-600 dark:text-slate-400 mb-4 line-clamp-2">{project.description}</p>
+        <div className="flex flex-wrap gap-2 mb-3">
           {project.tags.map((tag: string, index: number) => (
-            <Badge key={index} variant="secondary">{tag}</Badge>
+            <Badge 
+              key={index} 
+              variant="secondary" 
+              className="bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+            >
+              {tag}
+            </Badge>
           ))}
         </div>
       </CardContent>
-      <CardFooter>
+      <CardFooter className="pt-0">
         <Button 
-          variant="outline" 
-          className="w-full"
+          variant="default" 
+          className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-medium group-hover:shadow-md transition-all duration-200"
           onClick={onViewDetails}
         >
           View Details
+          <ChevronRight size={16} className="ml-2 transition-transform group-hover:translate-x-1" />
         </Button>
       </CardFooter>
     </Card>

@@ -10,28 +10,16 @@ import { Award, CheckCircle2, Users } from "lucide-react";
 export default function AboutPage() {
   const team = [
     {
-      name: "John Smith",
+      name: "Mayur Kakadiya",
       role: "Founder & CEO",
-      image: "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-      bio: "With over 25 years in the construction industry, John founded 1ShotBuilders with a vision to deliver excellence in every project."
+      image: "/images/personal/mayur.jpg",
+      bio: "A passionate newcomer to the construction industry, Mayur combines fresh ideas with a strong entrepreneurial spirit to lead 1ShotBuilders."
     },
     {
-      name: "Sarah Johnson",
-      role: "Chief Architect",
-      image: "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-      bio: "Sarah brings 15 years of architectural expertise, creating innovative designs that combine aesthetics with functionality."
-    },
-    {
-      name: "Michael Chen",
-      role: "Construction Manager",
-      image: "https://images.pexels.com/photos/1516680/pexels-photo-1516680.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-      bio: "Michael oversees our construction teams, ensuring each project is completed to the highest standards of quality and safety."
-    },
-    {
-      name: "Emma Williams",
-      role: "Interior Designer",
-      image: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-      bio: "Emma transforms spaces with her keen eye for design, creating interiors that are both beautiful and functional."
+      name: "Prashant Dholakiya",
+      role: "Founder",
+      image: "/images/personal/prashant.jpg",
+      bio: "Prashant brings a hands-on approach and a drive for quality, stepping confidently into the construction space with a vision for growth."
     }
   ];
 
@@ -187,7 +175,7 @@ export default function AboutPage() {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {team.map((member, index) => (
               <Card key={index} className="overflow-hidden">
                 <div className="relative aspect-square">

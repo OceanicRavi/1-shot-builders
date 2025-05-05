@@ -58,21 +58,21 @@ const timelineSteps = [
 const testimonials = [
   {
     quote: "1ShotBuilders transformed our outdated kitchen into a modern masterpiece, on time and within budget. The attention to detail was exceptional.",
-    author: "Sarah Johnson",
+    author: "Tirth Gandhi",
     position: "Homeowner",
-    image: "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    image: "https://images.pexels.com/photos/6898854/pexels-photo-6898854.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
   },
   {
     quote: "Working with 1ShotBuilders for our office renovation was a seamless experience. Their team's professionalism and quality craftsmanship exceeded our expectations.",
-    author: "Michael Chen",
+    author: "Manan Dolly",
     position: "Business Owner",
-    image: "https://images.pexels.com/photos/1516680/pexels-photo-1516680.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    image: "https://images.pexels.com/photos/6898854/pexels-photo-6898854.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
   },
   {
     quote: "From the initial consultation to the final walkthrough, 1ShotBuilders provided exceptional service. Our new build is exactly what we envisioned.",
-    author: "Emma Williams",
+    author: "Komal Patel",
     position: "Homeowner",
-    image: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    image: "https://images.pexels.com/photos/6898854/pexels-photo-6898854.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
   },
 ];
 

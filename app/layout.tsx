@@ -10,6 +10,9 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: '1ShotBuilders - Premier Construction & Renovation Services',
   description: 'Professional construction and renovation services tailored to your needs. From residential to commercial projects, we deliver quality craftsmanship in one shot.',
+  icons: {
+    icon: '/favicon.png',
+  },
 };
 
 export default function RootLayout({

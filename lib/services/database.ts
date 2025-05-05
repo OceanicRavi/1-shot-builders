@@ -139,6 +139,13 @@ export const db = {
         .from('uploads')
         .insert(upload);
       return { data, error };
+    },
+    delete: async (id: string) => {
+      const { error } = await supabase
+        .from('uploads')
+        .delete()
+        .eq('id', id);
+      return { error };
     }
   },
 

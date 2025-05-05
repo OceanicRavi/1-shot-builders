@@ -8,7 +8,7 @@ import MobileMenu from "@/components/mobile-menu";
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
 import { UserNav } from "@/components/user-nav";
-import { Landmark } from "lucide-react";
+import Image from 'next/image';
 import { db } from "@/lib/services/database";
 import { supabase } from "@/lib/supabase";
 
@@ -80,7 +80,13 @@ export function SiteHeader() {
       <div className="container flex h-16 items-center">
         <div className="mr-4 flex">
           <Link href="/" className="mr-6 flex items-center space-x-2">
-            <Landmark className="h-6 w-6 text-primary" />
+          <Image
+              src="/favicon.png"
+              alt="1ShotBuilders logo"
+              width={24}
+              height={24}
+              className="h-6 w-6"
+            />
             <span className="hidden font-bold sm:inline-block text-2xl">1 SHOT Builders</span>
           </Link>
         </div>

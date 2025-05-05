@@ -12,13 +12,23 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Upload, Check, X, FileText, Video, Image as ImageIcon, Globe, Download } from "lucide-react";
+import { Loader2, Upload, Check, X, FileText, Video, Image as ImageIcon, Globe, Download, Trash2 } from "lucide-react";
 import { db } from "@/lib/services/database";
 import { UploadFileDialog } from "@/components/dialogs/upload-file-dialog";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface FileUpload {
   id: string;
@@ -47,6 +57,7 @@ export default function AdminFilesPage() {
   const [uploads, setUploads] = useState<GroupedUploads>({});
   const [loading, setLoading] = useState(true);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
+  const [fileToDelete, setFileToDelete] = useState<FileUpload | null>(null);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -116,6 +127,50 @@ export default function AdminFilesPage() {
         description: error.message,
         variant: "destructive",
       });
+    }
+  }
+
+  async function deleteFile(file: FileUpload) {
+    try {
+      // Delete from storage first
+      const filePath = file.file_url.split('/').pop();
+      if (filePath) {
+        const { error: storageError } = await db.storage
+          .from('project-files')
+          .remove([`${file.project_id}/${filePath}`]);
+
+        if (storageError) throw storageError;
+      }
+
+      // Delete from database
+      const { error: dbError } = await db.uploads.delete(file.id);
+      if (dbError) throw dbError;
+
+      // Update local state
+      setUploads(prevUploads => {
+        const newUploads = { ...prevUploads };
+        Object.keys(newUploads).forEach(projectId => {
+          newUploads[projectId].files = newUploads[projectId].files.filter(f => f.id !== file.id);
+          // Remove project if it has no files
+          if (newUploads[projectId].files.length === 0) {
+            delete newUploads[projectId];
+          }
+        });
+        return newUploads;
+      });
+
+      toast({
+        title: "File deleted",
+        description: "The file has been permanently deleted.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error deleting file",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setFileToDelete(null);
     }
   }
 
@@ -227,13 +282,24 @@ export default function AdminFilesPage() {
                           />
                         </div>
 
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => window.open(file.file_url, "_blank")}
-                        >
-                          <Download className="h-4 w-4" />
-                        </Button>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => window.open(file.file_url, "_blank")}
+                          >
+                            <Download className="h-4 w-4" />
+                          </Button>
+                          
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-red-500 hover:text-red-600"
+                            onClick={() => setFileToDelete(file)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -249,6 +315,25 @@ export default function AdminFilesPage() {
         onOpenChange={setShowUploadDialog}
         onSuccess={loadUploads}
       />
+      <AlertDialog open={!!fileToDelete} onOpenChange={() => setFileToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete File</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this file? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-500 hover:bg-red-600"
+              onClick={() => fileToDelete && deleteFile(fileToDelete)}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
