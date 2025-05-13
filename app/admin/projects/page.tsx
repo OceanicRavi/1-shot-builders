@@ -20,9 +20,26 @@ interface Project {
   name: string;
   description: string | null;
   location: string | null;
+  address: string | null;
   status: 'planning' | 'in_progress' | 'completed';
+  category: string | null;
+  tags: string[] | null;
+  features: string[] | null;
+  materials_used: string[] | null;
+  budget: number | null;
+  cost_breakdown: Record<string, number> | null;
+  testimonial: string | null;
+  rating: number | null;
+  highlighted: boolean;
+  show_on_website: boolean;
+  start_date: string | null;
+  end_date: string | null;
   franchise: { name: string } | null;
+  franchise_id: string | null;
   client: { user: { full_name: string } } | null;
+  client_id: string | null;
+  project_manager: { full_name: string } | null;
+  created_by: string | null;
   created_at: string;
   deleted_at?: string;
 }
@@ -62,7 +79,7 @@ export default function AdminProjectsPage() {
 
   useEffect(() => {
     loadProjects();
-  }, [searchTerm, statusFilter, toast]);
+  }, [searchTerm, statusFilter]);
 
   async function handleDeleteProject(projectId: string) {
     try {
@@ -70,7 +87,7 @@ export default function AdminProjectsPage() {
         deleted_at: new Date().toISOString(),
       });
       if (error) throw error;
-  
+
       setProjects(projects.filter(p => p.id !== projectId));
       toast({ title: "Deleted", description: "Project soft-deleted." });
     } catch (error: any) {
@@ -79,18 +96,18 @@ export default function AdminProjectsPage() {
       setConfirmDeleteId(null);
     }
   }
+
   async function handleSaveEdit(updates: Partial<Project>) {
     if (!editProject) return;
     const { error } = await db.projects.update(editProject.id, updates);
     if (!error) {
       toast({ title: "Updated", description: "Project updated successfully." });
-      loadProjects(); // Refresh list
+      loadProjects();
     } else {
       toast({ title: "Update failed", description: error.message, variant: "destructive" });
     }
     setEditProject(null);
   }
-  
 
   if (loading) {
     return (
@@ -144,10 +161,12 @@ export default function AdminProjectsPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Project Name</TableHead>
-                  <TableHead>Location</TableHead>
+                  <TableHead>Address</TableHead>
+                  <TableHead>Category</TableHead>
                   <TableHead>Franchise</TableHead>
                   <TableHead>Client</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>Budget</TableHead>
                   <TableHead>Created</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
@@ -155,8 +174,9 @@ export default function AdminProjectsPage() {
               <TableBody>
                 {projects.map((project) => (
                   <TableRow key={project.id}>
-                    <TableCell className="font-medium">{project.name}</TableCell>
-                    <TableCell>{project.location || "N/A"}</TableCell>
+                    <TableCell className="w-[200px] whitespace-normal break-words">{project.name}</TableCell>
+                    <TableCell className="w-[200px] whitespace-normal break-words">{project.address || "N/A"}</TableCell>
+                    <TableCell>{project.category || "N/A"}</TableCell>
                     <TableCell>{project.franchise?.name || "N/A"}</TableCell>
                     <TableCell>{project.client?.user?.full_name || "N/A"}</TableCell>
                     <TableCell>
@@ -164,20 +184,21 @@ export default function AdminProjectsPage() {
                         {statusToLabel[project.status]}
                       </Badge>
                     </TableCell>
+                    <TableCell>{project.budget ? `NZD ${project.budget.toLocaleString()}` : "N/A"}</TableCell>
                     <TableCell>
                       {new Date(project.created_at).toLocaleDateString("en-GB")}
                     </TableCell>
                     <TableCell className="text-right">
-                    <Button variant="outline" size="sm" className="mr-2" onClick={() => setEditProject(project)}>
-                      Edit
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => setConfirmDeleteId(project.id)}
-                    >
-                      Delete
-                    </Button>
+                      <Button variant="outline" size="sm" className="mr-2" onClick={() => setEditProject(project)}>
+                        Edit
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => setConfirmDeleteId(project.id)}
+                      >
+                        Delete
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -192,6 +213,7 @@ export default function AdminProjectsPage() {
         onOpenChange={setShowAddDialog}
         onSuccess={loadProjects}
       />
+
       {confirmDeleteId && (
         <ConfirmDialog
           open={!!confirmDeleteId}
@@ -201,23 +223,19 @@ export default function AdminProjectsPage() {
           description="This will archive the project. You can restore it from Supabase if needed."
         />
       )}
+
       {editProject && (
         <EditProjectDialog
           open={!!editProject}
           onOpenChange={() => setEditProject(null)}
           project={{
-            id: editProject.id,
-            name: editProject.name,
-            description: editProject.description,
-            location: editProject.location,
-            status: editProject.status,
-            franchise_id: (editProject as any).franchise_id ?? null,
-            client_id: (editProject as any).client_id ?? null,
+            ...editProject,
+            franchise_id: editProject.franchise_id,
+            client_id: editProject.client_id,
           }}
           onSave={handleSaveEdit}
         />
       )}
-
     </>
   );
 }

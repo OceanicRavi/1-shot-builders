@@ -17,7 +17,9 @@ interface ProjectDetailsModalProps {
 export function ProjectDetailsModal({ project, isOpen, onClose }: ProjectDetailsModalProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
-  const projectImages = project.images || [project.image];
+  const projectImages = Array.isArray(project.media) && project.media.length > 0
+  ? project.media.map((item: any) => item.file_url)
+  : [project.image];
 
   const nextImage = () => {
     setCurrentImageIndex((prev) => 
@@ -40,7 +42,7 @@ export function ProjectDetailsModal({ project, isOpen, onClose }: ProjectDetails
           <div className="relative w-full lg:w-2/3 aspect-video">
             <Image
               src={projectImages[currentImageIndex]}
-              alt={project.title}
+              alt={project.name}
               fill
               className="object-cover"
             />
@@ -100,7 +102,7 @@ export function ProjectDetailsModal({ project, isOpen, onClose }: ProjectDetails
               <div>
                 <h3 className="font-semibold mb-2">Tags</h3>
                 <div className="flex flex-wrap gap-2">
-                  {project.tags.map((tag: string, index: number) => (
+                  {project.tags?.map((tag: string, index: number) => (
                     <Badge key={index} variant="secondary">{tag}</Badge>
                   ))}
                 </div>
@@ -111,11 +113,11 @@ export function ProjectDetailsModal({ project, isOpen, onClose }: ProjectDetails
                 <Card className="p-4 space-y-2">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Start Date</span>
-                    <span>Jan 2024</span>
+                    <span>{project.start_date}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Completion</span>
-                    <span>Mar 2024</span>
+                    <span>{project.end_date}</span> 
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Category</span>

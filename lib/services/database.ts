@@ -113,6 +113,29 @@ export const db = {
         .update({ deleted_at: new Date().toISOString() })
         .eq('id', id);
       return { error };
+    },
+    publiclist: async (filters?: { status?: string; search?: string }) => {
+      let query = supabase
+        .from('projects')
+        .select(`
+          *,
+          franchise:franchises(name),
+          client:clients(user:users(full_name)),
+          media:uploads(file_url, file_type, title, description, original_name)
+        `, { count: 'exact' })
+        .is("deleted_at", null)
+        .eq('uploads.is_public', true); // Filter media by 'is_public' being true
+  
+      if (filters?.status && filters.status !== 'all') {
+        query = query.eq('status', filters.status);
+      }
+  
+      if (filters?.search) {
+        query = query.ilike('name', `%${filters.search}%`);
+      }
+  
+      const { data, count, error } = await query;
+      return { data, count, error };
     }
   },
 

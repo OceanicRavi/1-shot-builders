@@ -115,6 +115,7 @@ export interface Database {
           created_at: string
           updated_at: string
           deleted_at: string
+          address?: string
         }
         Insert: {
           id?: string
@@ -128,6 +129,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
           deleted_at?: string
+          address?: string
         }
         Update: {
           id?: string

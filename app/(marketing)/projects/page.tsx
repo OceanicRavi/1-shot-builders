@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
@@ -10,9 +10,40 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { ProjectDetailsModal } from "@/components/project-details-modal";
-import { ChevronRight, MapPin } from "lucide-react";
+import { ChevronRight, Loader2, MapPin } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { db } from "@/lib/services/database";
 
-const projects = [
+interface Project {
+  id: string;
+  name: string;
+  description: string | null;
+  location: string | null;
+  address: string | null;
+  status: 'planning' | 'in_progress' | 'completed';
+  category: string | null;
+  tags: string[] | null;
+  features: string[] | null;
+  materials_used: string[] | null;
+  budget: number | null;
+  cost_breakdown: Record<string, number> | null;
+  testimonial: string | null;
+  rating: number | null;
+  highlighted: boolean;
+  show_on_website: boolean;
+  start_date: string | null;
+  end_date: string | null;
+  franchise: { name: string } | null;
+  franchise_id: string | null;
+  client: { user: { full_name: string } } | null;
+  client_id: string | null;
+  project_manager: { full_name: string } | null;
+  created_by: string | null;
+  created_at: string;
+  deleted_at?: string;
+}
+
+/* const projects = [
   {
     "id": 1,
     "title": "Modern Family Makeover",
@@ -156,14 +187,16 @@ const projects = [
     "location": "Glendene, Auckland",
     "tags": ["Residential", "New Build", "Kitchen", "Bathroom", "Living Room", "Study"]
   }
-];
+]; */
 
 export default function ProjectsPage() {
   const [activeTab, setActiveTab] = useState("all");
   const [activeStatus, setActiveStatus] = useState("all");
-  const [filteredProjects, setFilteredProjects] = useState(projects);
-  const [selectedProject, setSelectedProject] = useState<any>(null);
-
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
   const filterProjects = (category: string, status: string) => {
     let filtered = [...projects];
@@ -189,6 +222,36 @@ export default function ProjectsPage() {
     filterProjects(activeTab, value);
   };
 
+  async function loadProjects() {
+    try {
+      const { data, error } = await db.projects.publiclist();
+      if (error) throw error;
+
+      setProjects(data || []);
+      setFilteredProjects(data || []);
+    } catch (error: any) {
+      console.error("Error loading projects:", error);
+      toast({
+        title: "Error loading projects",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    loadProjects();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
@@ -324,7 +387,7 @@ function ProjectCard({ project, onViewDetails }: { project: any; onViewDetails: 
       <div className="relative aspect-video overflow-hidden">
         <Image
           src={project.image}
-          alt={project.title}
+          alt={project.name}
           fill
           className={`object-cover transition-transform duration-700 ${isHovered ? 'scale-110' : 'scale-100'}`}
         />
@@ -338,7 +401,7 @@ function ProjectCard({ project, onViewDetails }: { project: any; onViewDetails: 
           <h3 className="text-2xl font-bold text-white transform translate-z-0 tracking-wide" style={{
             textShadow: "0 2px 4px rgba(0,0,0,0.8), 0 4px 12px rgba(0,0,0,0.5), 1px 1px 0 #000, -1px -1px 0 #000"
           }}>
-            <span className="bg-black bg-opacity-30 px-3 py-1 rounded backdrop-blur-sm">{project.title}</span>
+            <span className="bg-black bg-opacity-30 px-3 py-1 rounded backdrop-blur-sm">{project.name}</span>
           </h3>
         </div>
       </div>
@@ -354,7 +417,7 @@ function ProjectCard({ project, onViewDetails }: { project: any; onViewDetails: 
       <CardContent>
         <p className="text-slate-600 dark:text-slate-400 mb-4 line-clamp-2">{project.description}</p>
         <div className="flex flex-wrap gap-2 mb-3">
-          {project.tags.map((tag: string, index: number) => (
+          {project.tags?.map((tag: string, index: number) => (
             <Badge
               key={index}
               variant="secondary"
