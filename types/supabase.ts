@@ -116,6 +116,13 @@ export interface Database {
           updated_at: string
           deleted_at: string
           address?: string
+          category?: string
+          tags?: string[]
+          features?: string[]
+          materials_used?: string[]
+          budget?: number | null
+          highlighted?: boolean
+          show_on_website?: boolean
         }
         Insert: {
           id?: string
@@ -130,6 +137,13 @@ export interface Database {
           updated_at?: string
           deleted_at?: string
           address?: string
+          category?: string
+          tags?: string[]
+          features?: string[]
+          materials_used?: string[]
+          budget?: number | null
+          highlighted?: boolean
+          show_on_website?: boolean
         }
         Update: {
           id?: string
@@ -143,8 +157,16 @@ export interface Database {
           created_at?: string
           updated_at?: string
           deleted_at?: string
+          address?: string
+          category?: string
+          tags?: string[]
+          features?: string[]
+          materials_used?: string[]
+          budget?: number | null
+          highlighted?: boolean
+          show_on_website?: boolean
         }
-      }
+      }      
       uploads: {
         Row: {
           id: string

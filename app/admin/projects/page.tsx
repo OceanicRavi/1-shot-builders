@@ -20,12 +20,12 @@ interface Project {
   name: string;
   description: string | null;
   location: string | null;
-  address: string | null;
+  address?: string; // nullable in app logic, optional for Supabase
   status: 'planning' | 'in_progress' | 'completed';
-  category: string | null;
-  tags: string[] | null;
-  features: string[] | null;
-  materials_used: string[] | null;
+  category: string;
+  tags: string[]; // use [] instead of null
+  features: string[]; // use [] instead of null
+  materials_used: string[]; // use [] instead of null
   budget: number | null;
   cost_breakdown: Record<string, number> | null;
   testimonial: string | null;
@@ -41,8 +41,10 @@ interface Project {
   project_manager: { full_name: string } | null;
   created_by: string | null;
   created_at: string;
+  updated_at: string;
   deleted_at?: string;
 }
+
 
 export default function AdminProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
