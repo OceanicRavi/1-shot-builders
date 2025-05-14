@@ -14,7 +14,6 @@ import { db } from "@/lib/services/database";
 import { AddProjectDialog } from "@/components/dialogs/add-project-dialog";
 import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
 import { EditProjectDialog } from "@/components/dialogs/edit-project-dailog";
-
 interface Project {
   id: string;
   name: string;
@@ -34,17 +33,17 @@ interface Project {
   show_on_website: boolean;
   start_date: string | null;
   end_date: string | null;
-  franchise: { name: string } | null;
+  franchise?: { name: string } | null;
   franchise_id: string | null;
-  client: { user: { full_name: string } } | null;
+  client?: { user: { full_name: string } } | null;
   client_id: string | null;
-  project_manager: { full_name: string } | null;
+  project_manager: string | null;
   created_by: string | null;
   created_at: string;
   updated_at: string;
   deleted_at?: string;
+  image: string;
 }
-
 
 export default function AdminProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -176,8 +175,8 @@ export default function AdminProjectsPage() {
               <TableBody>
                 {projects.map((project) => (
                   <TableRow key={project.id}>
-                    <TableCell className="w-[200px] whitespace-normal break-words">{project.name}</TableCell>
-                    <TableCell className="w-[200px] whitespace-normal break-words">{project.address || "N/A"}</TableCell>
+                    <TableCell className="w-[150px] whitespace-normal break-words">{project.name}</TableCell>
+                    <TableCell className="w-[150px] whitespace-normal break-words">{project.address || "N/A"}</TableCell>
                     <TableCell>{project.category || "N/A"}</TableCell>
                     <TableCell>{project.franchise?.name || "N/A"}</TableCell>
                     <TableCell>{project.client?.user?.full_name || "N/A"}</TableCell>
