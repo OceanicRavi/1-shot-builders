@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
+import AIWidget from "./AIAgent";
 
 export function SiteFooter() {
   return (
@@ -122,7 +123,7 @@ export function SiteFooter() {
         <div className="border-t border-border mt-8 pt-8 text-center text-muted-foreground">
           <p>© {new Date().getFullYear()} 1ShotBuilders. All rights reserved.</p>
           <div className="mt-2 flex justify-center space-x-4 text-sm">
-{/*             <Link href="/privacy" className="hover:text-primary">
+            {/*             <Link href="/privacy" className="hover:text-primary">
               Privacy Policy
             </Link>
             <Link href="/terms" className="hover:text-primary">
@@ -131,6 +132,9 @@ export function SiteFooter() {
             <Link href="/franchise/apply" className="hover:text-primary">
               Franchise Opportunities
             </Link> */}
+            <div className="fixed bottom-24 right-4 z-50">
+              <AIWidget />
+            </div>
             <p>Created by NovaNexus AI.</p>
           </div>
         </div>
