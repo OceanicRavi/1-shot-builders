@@ -26,10 +26,8 @@ export default function AboutPage() {
   const certifications = [
     "Licensed Building Practitioners",
     "Registered Master Builders",
-    "Certified Green Building Professional",
     "Site Safe Certified",
-    "Construction Health and Safety NZ Accredited",
-    "New Zealand Institute of Architects Member"
+    "Construction Health and Safety NZ Accredited"
   ];
 
   return (
@@ -211,7 +209,7 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6">
             {certifications.map((cert, index) => (
               <Card key={index} className="text-center">
                 <CardHeader>
