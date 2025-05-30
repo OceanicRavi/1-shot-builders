@@ -50,7 +50,7 @@ export default function ServicesPage() {
             
             <TabsContent value="all" className="space-y-16 pt-4">
               {/* Finance Services */}
-              <div id="finance" className="scroll-mt-20">
+{/*               <div id="finance" className="scroll-mt-20">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                   <div className="relative aspect-video rounded-lg overflow-hidden">
                     <Image
@@ -88,10 +88,10 @@ export default function ServicesPage() {
                     </Button>
                   </div>
                 </div>
-              </div>
+              </div> */}
               
               {/* Architecture Services */}
-              <div id="architecture" className="scroll-mt-20">
+{/*               <div id="architecture" className="scroll-mt-20">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                   <div className="order-2 md:order-1">
                     <div className="mb-4">
@@ -129,10 +129,10 @@ export default function ServicesPage() {
                     />
                   </div>
                 </div>
-              </div>
+              </div> */}
               
               {/* Legal Services */}
-              <div id="legal" className="scroll-mt-20">
+{/*               <div id="legal" className="scroll-mt-20">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                   <div className="relative aspect-video rounded-lg overflow-hidden">
                     <Image
@@ -170,14 +170,14 @@ export default function ServicesPage() {
                     </Button>
                   </div>
                 </div>
-              </div>
+              </div> */}
               
               {/* Renovation Services */}
               <div id="renovation" className="scroll-mt-20">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                   <div className="order-2 md:order-1">
                     <div className="mb-4">
-                      <Home className="h-10 w-10 text-primary mb-2" />
+                      <PencilRuler className="h-10 w-10 text-primary mb-2" />
                     </div>
                     <h2 className="text-3xl font-bold tracking-tight mb-4">Renovation Services</h2>
                     <p className="text-muted-foreground mb-6">

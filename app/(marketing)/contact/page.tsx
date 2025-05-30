@@ -94,7 +94,7 @@ export default function ContactPage() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-muted-foreground">
-                      <a href="mailto:info@1shotbuilders.com" className="hover:text-primary">info@1shotbuilders.com</a>
+                      <a href="mailto:we@1shotbuilders.co.nz" className="hover:text-primary">we@1shotbuilders.co.nz</a>
                     </p>
                   </CardContent>
                 </Card>

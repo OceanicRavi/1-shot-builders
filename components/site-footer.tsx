@@ -72,21 +72,7 @@ export function SiteFooter() {
           <div>
             <h4 className="font-semibold mb-4">Services</h4>
             <ul className="space-y-2">
-              <li>
-                <Link href="/services#finance" className="text-muted-foreground hover:text-primary">
-                  Finance
-                </Link>
-              </li>
-              <li>
-                <Link href="/services#architecture" className="text-muted-foreground hover:text-primary">
-                  Architecture
-                </Link>
-              </li>
-              <li>
-                <Link href="/services#legal" className="text-muted-foreground hover:text-primary">
-                  Legal
-                </Link>
-              </li>
+              
               <li>
                 <Link href="/services#renovation" className="text-muted-foreground hover:text-primary">
                   Renovation
@@ -112,8 +98,8 @@ export function SiteFooter() {
                 </a>
               </p>
               <p>
-                <a href="mailto:info@1shotbuilders.com" className="hover:text-primary">
-                  info@1shotbuilders.com
+                <a href="mailto:we@1shotbuilders.co.nz" className="hover:text-primary">
+                  we@1shotbuilders.co.nz
                 </a>
               </p>
             </address>

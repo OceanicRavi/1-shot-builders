@@ -6,26 +6,21 @@ import { Button } from "@/components/ui/button";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, ChevronRight, Clock, Copy, PencilRuler, Shield, Wallet } from "lucide-react";
-import { motion } from "framer-motion";
+import { Check, ChevronRight, PencilRuler , Building  } from "lucide-react";
 
 const services = [
   {
-    icon: <Wallet className="h-8 w-8 text-primary" />,
-    title: "Finance",
-    description: "Expert financial planning and consultation for your project budget.",
+    icon: <Building  className="h-8 w-8 text-primary" />,
+    title: "New Builds",
+    description: "Turn your dream project into reality with our end-to-end new build construction services, from design to completion.",
   },
   {
     icon: <PencilRuler className="h-8 w-8 text-primary" />,
-    title: "Architecture",
-    description: "Custom architectural designs that bring your vision to life.",
-  },
-  {
-    icon: <Shield className="h-8 w-8 text-primary" />,
-    title: "Legal",
-    description: "Comprehensive legal support for permits, contracts, and compliance.",
+    title: "Renovations",
+    description: "Breathe new life into your existing space with our tailored renovation solutions, enhancing both style and functionality.",
   },
 ];
+
 
 const timelineSteps = [
   {
@@ -122,7 +117,7 @@ export default function Home() {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {services.map((service, index) => (
               <Card key={index} className="border-2 transition-all hover:border-primary/50 hover:shadow-md">
                 <CardHeader>
