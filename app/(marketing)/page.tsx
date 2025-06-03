@@ -6,11 +6,14 @@ import { Button } from "@/components/ui/button";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, ChevronRight, PencilRuler , Building  } from "lucide-react";
+import { Check, ChevronRight, PencilRuler, Building, Play } from "lucide-react";
+import { SetStateAction, useEffect, useState } from "react";
+import TestimonialsSection from "@/components/client-testimonial";
+import { db } from "@/lib/services/database";
 
 const services = [
   {
-    icon: <Building  className="h-8 w-8 text-primary" />,
+    icon: <Building className="h-8 w-8 text-primary" />,
     title: "New Builds",
     description: "Turn your dream project into reality with our end-to-end new build construction services, from design to completion.",
   },
@@ -50,32 +53,49 @@ const timelineSteps = [
   },
 ];
 
-const testimonials = [
-  {
-    quote: "1ShotBuilders transformed our outdated kitchen into a modern masterpiece, on time and within budget. The attention to detail was exceptional.",
-    author: "Tirth Gandhi",
-    position: "Homeowner",
-    image: "https://images.pexels.com/photos/6898854/pexels-photo-6898854.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-  },
-  {
-    quote: "Working with 1ShotBuilders for our office renovation was a seamless experience. Their team's professionalism and quality craftsmanship exceeded our expectations.",
-    author: "Manan Dolly",
-    position: "Business Owner",
-    image: "https://images.pexels.com/photos/6898854/pexels-photo-6898854.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-  },
-  {
-    quote: "From the initial consultation to the final walkthrough, 1ShotBuilders provided exceptional service. Our new build is exactly what we envisioned.",
-    author: "Komal Patel",
-    position: "Homeowner",
-    image: "https://images.pexels.com/photos/6898854/pexels-photo-6898854.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-  },
-];
-
+interface Testimonial {
+  id: number;
+  author: string;
+  position: string;
+  quote: string;
+  type: string;
+  video_url?: string;
+  project?: {
+    name: string;
+  };
+  image: string;
+}
 export default function Home() {
+const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [testimonialsLoading, setTestimonialsLoading] = useState(true);
+  const [testimonialsError, setTestimonialsError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadTestimonials = async () => {
+      try {
+        setTestimonialsLoading(true);
+        setTestimonialsError(null);
+        
+        const { data, error } = await db.testimonials.publiclist();
+        if (error) {
+          throw error;
+        }
+        
+        setTestimonials(data || []);
+      } catch (error: any) {
+        console.error("Error loading testimonials:", error);
+        setTestimonialsError(error.message || "Failed to load testimonials");
+      } finally {
+        setTestimonialsLoading(false);
+      }
+    };
+
+    loadTestimonials();
+  }, []);
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
-      
+
       <section className="relative">
         <div className="absolute inset-0 z-0">
           <Image
@@ -116,7 +136,7 @@ export default function Home() {
               Comprehensive construction and renovation services tailored to your unique needs.
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {services.map((service, index) => (
               <Card key={index} className="border-2 transition-all hover:border-primary/50 hover:shadow-md">
@@ -137,7 +157,7 @@ export default function Home() {
               </Card>
             ))}
           </div>
-          
+
           <div className="text-center mt-12">
             <Button asChild size="lg" className="btn-orange">
               <Link href="/services">View All Services</Link>
@@ -155,22 +175,22 @@ export default function Home() {
               A simple, effective approach to deliver your project with precision.
             </p>
           </div>
-          
+
           <div className="relative">
             <div className="hidden md:block absolute top-0 bottom-0 left-1/2 w-0.5 bg-border -translate-x-1/2"></div>
-            
+
             <div className="space-y-12 relative">
               {timelineSteps.map((step, index) => (
                 <div key={index} className="relative">
                   <div className={`md:flex items-center ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
                     <div className="hidden md:block w-1/2"></div>
-                    
+
                     <div className="flex items-center justify-center z-10 mb-4 md:mb-0 md:absolute md:left-1/2 md:-translate-x-1/2">
                       <div className="h-12 w-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg shadow-md">
                         {step.number}
                       </div>
                     </div>
-                    
+
                     <Card className={`md:w-1/2 ${index % 2 === 0 ? 'md:ml-12' : 'md:mr-12'}`}>
                       <CardHeader>
                         <CardTitle>{step.title}</CardTitle>
@@ -214,32 +234,8 @@ export default function Home() {
               Hear from our satisfied clients about their experiences working with us.
             </p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <Card key={index} className="h-full flex flex-col">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center mb-4">
-                    <div className="relative h-12 w-12 mr-4">
-                      <Image
-                        src={testimonial.image}
-                        alt={testimonial.author}
-                        fill
-                        className="rounded-full object-cover"
-                      />
-                    </div>
-                    <div>
-                      <CardTitle className="text-base">{testimonial.author}</CardTitle>
-                      <CardDescription>{testimonial.position}</CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="flex-grow">
-                  <p className="text-muted-foreground italic">&ldquo;{testimonial.quote}&rdquo;</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+
+          <TestimonialsSection testimonials={testimonials} />
         </div>
       </section>
 
@@ -250,10 +246,10 @@ export default function Home() {
             <div>
               <h2 className="text-3xl font-bold tracking-tight mb-6">Why Choose 1ShotBuilders?</h2>
               <p className="text-muted-foreground mb-8">
-                Our commitment to excellence sets us apart in the construction industry. 
+                Our commitment to excellence sets us apart in the construction industry.
                 We believe in delivering quality results that exceed your expectations.
               </p>
-              
+
               <ul className="space-y-4">
                 {[
                   "Expert team with years of industry experience",
@@ -268,14 +264,14 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              
+
               <div className="mt-8">
                 <Button asChild className="btn-orange">
                   <Link href="/about">More About Us</Link>
                 </Button>
               </div>
             </div>
-            
+
             <div className="relative aspect-square w-full rounded-lg overflow-hidden">
               <Image
                 src="https://images.pexels.com/photos/8961116/pexels-photo-8961116.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"

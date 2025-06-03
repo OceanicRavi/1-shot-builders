@@ -89,7 +89,6 @@ export default function AdminFilesPage() {
         acc[projectId].files.push(upload);
         return acc;
       }, {});
-      console.log(grouped);
       setUploads(grouped);
     } catch (error: any) {
       toast({

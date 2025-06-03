@@ -16,7 +16,7 @@ const supabase = createClient<Database>(
 export const db = {
   auth: {
     getSession: () => supabase.auth.getSession(),
-    signInWithPassword: (params: { email: string; password: string }) => 
+    signInWithPassword: (params: { email: string; password: string }) =>
       supabase.auth.signInWithPassword(params),
     signUp: (email: string, password: string, data?: object) =>
       supabase.auth.signUp({
@@ -30,7 +30,7 @@ export const db = {
     updatePassword: (password: string) =>
       supabase.auth.updateUser({ password })
   },
-  
+
   users: {
     getByAuthId: async (authId: string) => {
       const { data, error } = await supabase
@@ -106,7 +106,7 @@ export const db = {
         .eq('id', id); // optional: fetch updated record
       return { data, error };
     },
-  
+
     softDelete: async (id: string) => {
       const { error } = await supabase
         .from('projects')
@@ -126,15 +126,15 @@ export const db = {
         .is("deleted_at", null)
         .eq('uploads.is_public', true)
         .eq('show_on_website', true); // Filter media by 'is_public' being true
-  
+
       if (filters?.status && filters.status !== 'all') {
         query = query.eq('status', filters.status);
       }
-  
+
       if (filters?.search) {
         query = query.ilike('name', `%${filters.search}%`);
       }
-  
+
       const { data, count, error } = await query;
       return { data, count, error };
     }
@@ -200,11 +200,54 @@ export const db = {
   },
 
   franchise_applications: {
-    create: async(upload: Database['public']['Tables']['franchise_applications']['Insert']) => {
-            const { data, error } = await supabase
-              .from("franchise_applications")
-              .insert(upload);
-            return {data, error};
+    create: async (upload: Database['public']['Tables']['franchise_applications']['Insert']) => {
+      const { data, error } = await supabase
+        .from("franchise_applications")
+        .insert(upload);
+      return { data, error };
+    }
+  },
+
+  testimonials: {
+    list: async () => {
+      const { data, count, error } = await supabase
+        .from('testimonials')
+        .select(`
+        *,
+        projects(name)
+      `, { count: 'exact' });
+      return { data, count, error };
+    },
+    publiclist: async () => {
+      const { data, count, error } = await supabase
+        .from('testimonials')
+        .select(`
+      *,
+      projects:project_id(name)
+    `, { count: 'exact' })
+        .eq('is_public', true);
+      return { data, count, error };
+    },
+    update: async (id: string, updates: Partial<Database['public']['Tables']['testimonials']['Update']>) => {
+      const { data, error } = await supabase
+        .from('testimonials')
+        .update(updates)
+        .eq('id', id);
+      return { data, error };
+    },
+    create: async (testimonial: Database['public']['Tables']['testimonials']['Insert']) => {
+      const { data, error } = await supabase
+        .from('testimonials')
+        .insert(testimonial);
+      return { data, error };
+    },
+    delete: async (id: string) => {
+      const { error } = await supabase
+        .from('testimonials')
+        .delete()
+        .eq('id', id);
+      return { error };
     }
   }
+
 };

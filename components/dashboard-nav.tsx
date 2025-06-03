@@ -14,7 +14,8 @@ import {
   History,
   UserCircle,
   Download,
-  Building2
+  Building2,
+  Quote
 } from "lucide-react";
 
 interface DashboardNavProps {
@@ -39,14 +40,14 @@ export function DashboardNav({ role }: DashboardNavProps) {
       icon: FileText
     },
     {
-      title: "Project Uploads",
+      title: "All Files",
       href: "/admin/files",
       icon: Upload
     },
     {
-      title: "Upload Content",
+      title: "Client Testimonials",
       href: "/admin/content/upload",
-      icon: Upload
+      icon: Quote
     },
     {
       title: "Approve Content",
@@ -77,9 +78,9 @@ export function DashboardNav({ role }: DashboardNavProps) {
       icon: FileText
     },
     {
-      title: "Upload Content",
+      title: "Client Testimonials",
       href: "/internal/content/upload",
-      icon: Upload
+      icon: Quote 
     },
     {
       title: "Approve Content",

@@ -11,7 +11,6 @@ export async function middleware(req: NextRequest) {
   } = await supabase.auth.getSession();
 
   if (req.nextUrl.pathname === "/franchise/apply") {
-    console.log("✅ Skipping auth for /franchise/apply");
     return res;
   }
   // Auth routes - redirect to dashboard if already authenticated

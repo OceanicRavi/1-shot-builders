@@ -166,7 +166,7 @@ export interface Database {
           highlighted?: boolean
           show_on_website?: boolean
         }
-      }      
+      }
       uploads: {
         Row: {
           id: string
@@ -307,6 +307,38 @@ export interface Database {
         Update: {
           project_id?: string
           tag_id?: string
+        }
+      },
+      testimonials: {
+        Row: {
+          id: number
+          author: string
+          position: string
+          type: 'text' | 'video'
+          quote: string
+          video_url: string | null
+          project_id: string
+          is_public?: boolean
+        }
+        Insert: {
+          id?: number
+          author: string
+          position: string
+          type: 'text' | 'video'
+          quote: string
+          video_url?: string | null
+          project_id: string
+          is_public?: boolean
+        }
+        Update: {
+          id?: number
+          author?: string
+          position?: string
+          type?: 'text' | 'video'
+          quote?: string
+          video_url?: string | null
+          project_id?: string
+          is_public?: boolean
         }
       }
     }
