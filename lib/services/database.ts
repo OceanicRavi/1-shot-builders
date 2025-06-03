@@ -121,10 +121,11 @@ export const db = {
           *,
           franchise:franchises(name),
           client:clients(user:users(full_name)),
-          media:uploads(file_url, file_type, title, description, original_name)
+          media:uploads(file_url, file_type, title, description, original_name, is_main_image)
         `, { count: 'exact' })
         .is("deleted_at", null)
-        .eq('uploads.is_public', true); // Filter media by 'is_public' being true
+        .eq('uploads.is_public', true)
+        .eq('show_on_website', true); // Filter media by 'is_public' being true
   
       if (filters?.status && filters.status !== 'all') {
         query = query.eq('status', filters.status);
@@ -145,7 +146,7 @@ export const db = {
         .from('uploads')
         .select(`
           *,
-          projects(name),
+          projects(name, show_on_website),
           users!uploads_uploaded_by_fkey(email)
         `, { count: 'exact' });
       return { data, count, error };

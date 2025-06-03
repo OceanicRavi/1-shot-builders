@@ -30,6 +30,8 @@ import {
 } from "@/components/ui/alert-dialog";
 
 interface FileUpload {
+  is_main_image: boolean;
+  is_client_facing: boolean;
   id: string;
   project_id: string;
   file_url: string;
@@ -48,6 +50,7 @@ interface FileUpload {
 interface GroupedUploads {
   [projectId: string]: {
     projectName: string;
+    showOnWebsite: boolean;
     files: FileUpload[];
   };
 }
@@ -67,25 +70,26 @@ export default function AdminFilesPage() {
       [projectId]: !prev[projectId],
     }));
   };
-  
+
   async function loadUploads() {
     try {
       const { data, error } = await db.uploads.list();
       if (error) throw error;
-
+      
       // Group uploads by project
       const grouped = (data || []).reduce<GroupedUploads>((acc, upload) => {
         const projectId = upload.project_id;
         if (!acc[projectId]) {
           acc[projectId] = {
             projectName: upload.projects?.name || "Unknown Project",
+            showOnWebsite: upload.projects?.show_on_website ?? true,
             files: [],
           };
         }
         acc[projectId].files.push(upload);
         return acc;
       }, {});
-
+      console.log(grouped);
       setUploads(grouped);
     } catch (error: any) {
       toast({
@@ -122,7 +126,7 @@ export default function AdminFilesPage() {
       setUploads(prevUploads => {
         const newUploads = { ...prevUploads };
         Object.keys(newUploads).forEach(projectId => {
-          newUploads[projectId].files = newUploads[projectId].files.map(file => 
+          newUploads[projectId].files = newUploads[projectId].files.map(file =>
             file.id === id ? { ...file, ...update } : file
           );
         });
@@ -181,6 +185,22 @@ export default function AdminFilesPage() {
     }
   }
 
+  async function updateProject(projectId: string, arg1: { show_on_website: boolean; }) {
+    try {
+      const { data: { session }, error: sessionError } = await db.auth.getSession();
+      if (sessionError) throw sessionError;
+
+      const { error } = await db.projects.update(projectId, arg1);
+      if (error) throw error;
+    } catch (error: any) {
+      toast({
+        title: "Error updating project",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  }
+
   const FileTypeIcon = ({ type }: { type: string }) => {
     switch (type) {
       case "image":
@@ -218,116 +238,189 @@ export default function AdminFilesPage() {
       </div>
 
       <div className="grid gap-6">
-      {Object.entries(uploads).map(([projectId, { projectName, files }]) => {
-        const isExpanded = expandedProjects[projectId];
+        {Object.entries(uploads).map(([projectId, { projectName, showOnWebsite, files }]) => {
+          const isExpanded = expandedProjects[projectId];
 
-        return (
-          <Card key={projectId}>
-            <CardHeader
-              onClick={() => toggleProject(projectId)}
-              className="cursor-pointer flex flex-row items-center justify-between"
-            >
-              <div>
-                <CardTitle>{projectName}</CardTitle>
-                <CardDescription>
-                  {files.length} file{files.length !== 1 ? "s" : ""} uploaded
-                </CardDescription>
-              </div>
-              <div>
-                {isExpanded ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
-              </div>
-            </CardHeader>
+          return (
+            <Card key={projectId}>
+              <CardHeader className="flex flex-row items-center justify-between cursor-default">
+                {/* Left side: Project title + description */}
+                <div>
+                  <CardTitle>{projectName}</CardTitle>
+                  <CardDescription>
+                    {files.length} file{files.length !== 1 ? "s" : ""} uploaded
+                  </CardDescription>
+                </div>
 
-            {isExpanded && (
-              <CardContent>
-                <ScrollArea className="h-[300px] pr-4">
-                  <div className="space-y-4">
-                    {files.map((file) => (
-                      <div
-                        key={file.id}
-                        className="flex items-start space-x-4 p-4 rounded-lg border bg-card"
-                      >
-                        <div className="shrink-0">
-                          <FileTypeIcon type={file.file_type} />
-                        </div>
-
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <h4 className="text-sm font-semibold truncate">
-                              {file.title || file.original_name}
-                            </h4>
-                            <Badge variant="outline" className="text-xs">
-                              {file.file_type}
-                            </Badge>
-                          </div>
-
-                          {file.description && (
-                            <p className="text-sm text-muted-foreground mt-1">
-                              {file.description}
-                            </p>
-                          )}
-
-                          <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                            <span>Uploaded by: {file.users?.email}</span>
-                            <span>
-                              {new Date(file.created_at).toLocaleDateString()}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-4">
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm text-muted-foreground">Public</span>
-                            <Switch
-                              checked={file.is_public}
-                              onCheckedChange={(checked) =>
-                                updateFile(file.id, { is_public: checked })
-                              }
-                            />
-                          </div>
-
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm text-muted-foreground">Approved</span>
-                            <Switch
-                              checked={!!file.approved_by}
-                              onCheckedChange={(checked) =>
-                                updateFile(file.id, {
-                                  approved_by: checked ? "pending" : null,
-                                })
-                              }
-                              className="data-[state=checked]:bg-green-500 data-[state=checked]:hover:bg-green-500"
-                            />
-                          </div>
-
-                          <div className="flex items-center gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => window.open(file.file_url, "_blank")}
-                            >
-                              <Download className="h-4 w-4" />
-                            </Button>
-
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="text-red-500 hover:text-red-600"
-                              onClick={() => setFileToDelete(file)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
+                {/* Right side: Two stacked items vertically */}
+                <div className="flex flex-col items-center justify-between">
+                  {/* The toggle switch with label */}
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-sm text-muted-foreground">Show project on website</span>
+                    <Switch
+                      checked={showOnWebsite}
+                      onCheckedChange={(checked) =>{
+                        updateProject(projectId, { show_on_website: checked });
+                        setUploads(prev => ({
+                          ...prev,
+                          [projectId]: {
+                            ...prev[projectId],
+                            showOnWebsite: checked,
+                          }
+                        }));
+                      }
+                      }
+                      className="data-[state=checked]:bg-green-500 data-[state=checked]:hover:bg-green-500"
+                    />
                   </div>
-                </ScrollArea>
-              </CardContent>
-            )}
-          </Card>
-        );
-      })}
-    </div>
+
+                  {/* Expand/collapse icon - click toggles project */}
+                  <div
+                    className="cursor-pointer"
+                    onClick={() => toggleProject(projectId)}
+                    aria-label={isExpanded ? "Collapse project" : "Expand project"}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") toggleProject(projectId);
+                    }}
+                  >
+                    {isExpanded ? (
+                      <ChevronUp className="h-5 w-5" />
+                    ) : (
+                      <ChevronDown className="h-5 w-5" />
+                    )}
+                  </div>
+                </div>
+              </CardHeader>
+
+
+              {isExpanded && (
+                <CardContent>
+                  <ScrollArea className="h-[300px] pr-4">
+                    <div className="space-y-4">
+                      {files
+                        .slice()
+                        .sort((a, b) => {
+                          return (b.is_main_image ? 1 : 0) - (a.is_main_image ? 1 : 0);
+                        })
+                        .map((file) => (
+                          <div
+                            key={file.id}
+                            className="flex items-start space-x-4 p-4 rounded-lg border bg-card"
+                          >
+                            <div className="shrink-0">
+                              <FileTypeIcon type={file.file_type} />
+                            </div>
+
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <h4 className="text-sm font-semibold truncate">
+                                  {file.title || file.original_name}
+                                </h4>
+                                <Badge variant="outline" className="text-xs">
+                                  {file.file_type}
+                                </Badge>
+                              </div>
+
+                              {file.description && (
+                                <p className="text-sm text-muted-foreground mt-1">
+                                  {file.description}
+                                </p>
+                              )}
+
+                              <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+                                <span>Uploaded by: {file.users?.email}</span>
+                                <span>
+                                  {new Date(file.created_at).toLocaleDateString()}
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-4">
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm text-muted-foreground">
+                                  Main Image
+                                </span>
+                                <Switch
+                                  checked={file.is_main_image}
+                                  onCheckedChange={(checked) =>
+                                    updateFile(file.id, { is_main_image: checked })
+                                  }
+                                  className="data-[state=checked]:bg-orange-500 data-[state=checked]:hover:bg-orange-500"
+                                />
+                              </div>
+
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm text-muted-foreground">
+                                  Show to Client
+                                </span>
+                                <Switch
+                                  checked={file.is_client_facing}
+                                  onCheckedChange={(checked) =>
+                                    updateFile(file.id, { is_client_facing: checked })
+                                  }
+                                  className="data-[state=checked]:bg-purple-500 data-[state=checked]:hover:bg-purple-500"
+                                />
+                              </div>
+
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm text-muted-foreground">
+                                  Show on Website
+                                </span>
+                                <Switch
+                                  checked={file.is_public}
+                                  onCheckedChange={(checked) =>
+                                    updateFile(file.id, { is_public: checked })
+                                  }
+                                />
+                              </div>
+
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm text-muted-foreground">
+                                  Approved
+                                </span>
+                                <Switch
+                                  checked={!!file.approved_by}
+                                  onCheckedChange={(checked) =>
+                                    updateFile(file.id, {
+                                      approved_by: checked ? "pending" : null,
+                                    })
+                                  }
+                                  className="data-[state=checked]:bg-green-500 data-[state=checked]:hover:bg-green-500"
+                                />
+                              </div>
+
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => window.open(file.file_url, "_blank")}
+                                >
+                                  <Download className="h-4 w-4" />
+                                </Button>
+
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="text-red-500 hover:text-red-600"
+                                  onClick={() => setFileToDelete(file)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  </ScrollArea>
+                </CardContent>
+              )}
+            </Card>
+
+          );
+        })}
+      </div>
 
       <UploadFileDialog
         open={showUploadDialog}

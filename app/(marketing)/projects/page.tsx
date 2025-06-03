@@ -366,6 +366,14 @@ export default function ProjectsPage() {
 
 function ProjectCard({ project, onViewDetails }: { project: any; onViewDetails: () => void }) {
   const [isHovered, setIsHovered] = useState(false);
+  const projectImages = Array.isArray(project.media) && project.media.length > 0
+  ? (project.media.filter((item: any) => item.is_main_image).length > 0
+      ? project.media
+          .filter((item: any) => item.is_main_image)
+          .map((item: any) => item.file_url)
+      : [project.image])
+  : [project.image];
+
   const statusColors = {
     completed: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
     in_progress: "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300",
@@ -386,7 +394,7 @@ function ProjectCard({ project, onViewDetails }: { project: any; onViewDetails: 
     >
       <div className="relative aspect-video overflow-hidden">
         <Image
-          src={project.image}
+          src={projectImages[0]}
           alt={project.name}
           fill
           className={`object-cover transition-transform duration-700 ${isHovered ? 'scale-110' : 'scale-100'}`}
