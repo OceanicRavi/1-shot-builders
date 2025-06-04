@@ -377,7 +377,7 @@ export default function ServicesPage() {
         <div className="container text-center">
           <h2 className="text-3xl font-bold tracking-tight mb-4">Ready to Start Your Project?</h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-            Contact us today for a consultation and let our experts bring your vision to life.
+            Contact us today for a consultation and let our experts bring your vision to life come true.
           </p>
           <Button asChild size="lg" variant="secondary">
             <Link href="/contact">Get in Touch</Link>
