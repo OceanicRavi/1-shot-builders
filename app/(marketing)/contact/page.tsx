@@ -80,7 +80,10 @@ export default function ContactPage() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-muted-foreground">
-                      <a href="tel:+64220429642" className="hover:text-primary">(+64) 022-042-9642</a>
+                      Contact <b>Mayur</b> on <a href="tel:+64220429642" className="hover:text-primary">(+64) 022-042-9642</a>
+                    </p>
+                    <p className="text-muted-foreground">
+                      Contact <b>Prashant</b> on <a href="tel:+64277771483" className="hover:text-primary">(+64) 027-777-1483</a>
                     </p>
                   </CardContent>
                 </Card>
