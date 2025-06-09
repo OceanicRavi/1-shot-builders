@@ -274,7 +274,7 @@ const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
 
             <div className="relative aspect-square w-full rounded-lg overflow-hidden">
               <Image
-                src="https://images.pexels.com/photos/8961116/pexels-photo-8961116.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+                src="https://images.pexels.com/photos/11429199/pexels-photo-11429199.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
                 alt="Construction team"
                 fill
                 className="object-cover"
