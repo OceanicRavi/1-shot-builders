@@ -119,8 +119,6 @@ export const db = {
         .from('projects')
         .select(`
           *,
-          franchise:franchises(name),
-          client:clients(user:users(full_name)),
           media:uploads(file_url, file_type, title, description, original_name, is_main_image)
         `, { count: 'exact' })
         .is("deleted_at", null)
