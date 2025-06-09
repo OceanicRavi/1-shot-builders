@@ -225,15 +225,30 @@ export default function ProjectsPage() {
   async function loadProjects() {
     try {
       const { data, error } = await db.projects.publiclist();
-      if (error) throw error;
+      if (error) {
+        console.error("[loadProjects] Supabase error:", JSON.stringify({
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        }, null, 2));
+        throw error;
+      }
 
       setProjects(data || []);
       setFilteredProjects(data || []);
     } catch (error: any) {
-      console.error("Error loading projects:", error);
+      console.error("[loadProjects] Caught error:", JSON.stringify({
+        errorType: typeof error,
+        message: error?.message || null,
+        name: error?.name || null,
+        stack: error?.stack || null,
+        raw: error
+      }, null, 2));
+
       toast({
         title: "Error loading projects",
-        description: error.message,
+        description: error?.message || error?.toString() || "An unexpected error occurred.",
         variant: "destructive",
       });
     } finally {
@@ -367,12 +382,12 @@ export default function ProjectsPage() {
 function ProjectCard({ project, onViewDetails }: { project: any; onViewDetails: () => void }) {
   const [isHovered, setIsHovered] = useState(false);
   const projectImages = Array.isArray(project.media) && project.media.length > 0
-  ? (project.media.filter((item: any) => item.is_main_image).length > 0
+    ? (project.media.filter((item: any) => item.is_main_image).length > 0
       ? project.media
-          .filter((item: any) => item.is_main_image)
-          .map((item: any) => item.file_url)
+        .filter((item: any) => item.is_main_image)
+        .map((item: any) => item.file_url)
       : [project.image])
-  : [project.image];
+    : [project.image];
 
   const statusColors = {
     completed: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
