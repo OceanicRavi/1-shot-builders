@@ -63,11 +63,11 @@ export default function ContactPage() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-muted-foreground">
+                    <address  className="text-muted-foreground">
                       20 Keats Place<br />
                       Blockhouse Bay<br />
                       Auckland, New Zealand
-                    </p>
+                    </address>
                   </CardContent>
                 </Card>
                 
@@ -79,12 +79,12 @@ export default function ContactPage() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-muted-foreground">
+                    <div className="text-muted-foreground">
                       Contact <b>Mayur</b> on <a href="tel:+64220429642" className="hover:text-primary">(+64) 022-042-9642</a>
-                    </p>
-                    <p className="text-muted-foreground">
+                    </div>
+                    <div className="text-muted-foreground">
                       Contact <b>Prashant</b> on <a href="tel:+64277771483" className="hover:text-primary">(+64) 027-777-1483</a>
-                    </p>
+                    </div>
                   </CardContent>
                 </Card>
                 

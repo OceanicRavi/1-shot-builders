@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
+  //output: 'export',
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -10,6 +10,9 @@ const nextConfig = {
     config.cache = false;
     return config;
   },
+  experimental: {
+    serverComponentsExternalPackages: ['resend']
+  }
 };
 
 module.exports = nextConfig;
