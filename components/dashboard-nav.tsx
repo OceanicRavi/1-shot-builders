@@ -15,7 +15,10 @@ import {
   UserCircle,
   Download,
   Building2,
-  Quote
+  Quote,
+  Mail,
+  Send,
+  UserPlus
 } from "lucide-react";
 
 interface DashboardNavProps {
@@ -53,6 +56,21 @@ export function DashboardNav({ role }: DashboardNavProps) {
       title: "Approve Content",
       href: "/admin/content/approve",
       icon: CheckCircle
+    },
+    {
+      title: "Email Templates",
+      href: "/admin/email/templates",
+      icon: Mail
+    },
+    {
+      title: "Email Recipients",
+      href: "/admin/email/recipients",
+      icon: UserPlus
+    },
+    {
+      title: "Email Campaigns",
+      href: "/admin/email/campaigns",
+      icon: Send
     },
     {
       title: "Audit Logs",

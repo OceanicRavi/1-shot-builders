@@ -246,6 +246,167 @@ export const db = {
         .eq('id', id);
       return { error };
     }
+  },
+  // Email system services
+  emailTemplates: {
+    list: async () => {
+      const { data, count, error } = await supabase
+        .from('email_templates')
+        .select('*', { count: 'exact' })
+        .order('created_at', { ascending: false });
+      return { data, count, error };
+    },
+    create: async (template: Database['public']['Tables']['email_templates']['Insert']) => {
+      const { data, error } = await supabase
+        .from('email_templates')
+        .insert(template)
+        .select()
+        .single();
+      return { data, error };
+    },
+    update: async (id: string, updates: Partial<Database['public']['Tables']['email_templates']['Update']>) => {
+      const { data, error } = await supabase
+        .from('email_templates')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+      return { data, error };
+    },
+    delete: async (id: string) => {
+      const { error } = await supabase
+        .from('email_templates')
+        .delete()
+        .eq('id', id);
+      return { error };
+    },
+    getById: async (id: string) => {
+      const { data, error } = await supabase
+        .from('email_templates')
+        .select('*')
+        .eq('id', id)
+        .single();
+      return { data, error };
+    }
+  },
+
+  recipients: {
+    list: async () => {
+      const { data, count, error } = await supabase
+        .from('recipients')
+        .select('*', { count: 'exact' })
+        .order('created_at', { ascending: false });
+      return { data, count, error };
+    },
+    create: async (recipient: Database['public']['Tables']['recipients']['Insert']) => {
+      const { data, error } = await supabase
+        .from('recipients')
+        .insert(recipient)
+        .select()
+        .single();
+      return { data, error };
+    },
+    update: async (id: string, updates: Partial<Database['public']['Tables']['recipients']['Update']>) => {
+      const { data, error } = await supabase
+        .from('recipients')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+      return { data, error };
+    },
+    delete: async (id: string) => {
+      const { error } = await supabase
+        .from('recipients')
+        .delete()
+        .eq('id', id);
+      return { error };
+    },
+    getByTags: async (tags: string[]) => {
+      const { data, error } = await supabase
+        .from('recipients')
+        .select('*')
+        .overlaps('tags', tags);
+      return { data, error };
+    }
+  },
+
+  campaigns: {
+    list: async () => {
+      const { data, count, error } = await supabase
+        .from('campaigns')
+        .select(`
+          *,
+          template:email_templates(name, subject),
+          campaign_recipients(id, email_sent, sent_at, error_message)
+        `, { count: 'exact' })
+        .order('created_at', { ascending: false });
+      return { data, count, error };
+    },
+    create: async (campaign: Database['public']['Tables']['campaigns']['Insert']) => {
+      const { data, error } = await supabase
+        .from('campaigns')
+        .insert(campaign)
+        .select()
+        .single();
+      return { data, error };
+    },
+    update: async (id: string, updates: Partial<Database['public']['Tables']['campaigns']['Update']>) => {
+      const { data, error } = await supabase
+        .from('campaigns')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+      return { data, error };
+    },
+    delete: async (id: string) => {
+      const { error } = await supabase
+        .from('campaigns')
+        .delete()
+        .eq('id', id);
+      return { error };
+    },
+    getById: async (id: string) => {
+      const { data, error } = await supabase
+        .from('campaigns')
+        .select(`
+          *,
+          template:email_templates(*),
+          campaign_recipients(*, recipient:recipients(*))
+        `)
+        .eq('id', id)
+        .single();
+      return { data, error };
+    }
+  },
+
+  campaignRecipients: {
+    create: async (campaignRecipient: Database['public']['Tables']['campaign_recipients']['Insert']) => {
+      const { data, error } = await supabase
+        .from('campaign_recipients')
+        .insert(campaignRecipient)
+        .select()
+        .single();
+      return { data, error };
+    },
+    update: async (id: string, updates: Partial<Database['public']['Tables']['campaign_recipients']['Update']>) => {
+      const { data, error } = await supabase
+        .from('campaign_recipients')
+        .update(updates)
+        .eq('id', id);
+      return { data, error };
+    },
+    getByCampaign: async (campaignId: string) => {
+      const { data, error } = await supabase
+        .from('campaign_recipients')
+        .select(`
+          *,
+          recipient:recipients(*)
+        `)
+        .eq('campaign_id', campaignId);
+      return { data, error };
+    }
   }
 
 };

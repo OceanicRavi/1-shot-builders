@@ -34,7 +34,9 @@ export default function AdminDashboard() {
     async function loadDashboardData() {
       try {
         // Check if user is admin
+        console.log('######## dashboard Check if user is admin');
         const { data: { session }, error: sessionError } = await db.auth.getSession();
+        console.log('######## dashboard session'+ JSON.stringify(session));
         if (sessionError) throw sessionError;
 
         if (!session?.user) {

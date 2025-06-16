@@ -340,6 +340,128 @@ export interface Database {
           project_id?: string
           is_public?: boolean
         }
+      },
+            email_templates: {
+        Row: {
+          id: string
+          name: string
+          subject: string
+          body_html: string
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          subject: string
+          body_html: string
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          subject?: string
+          body_html?: string
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      recipients: {
+        Row: {
+          id: string
+          name: string
+          email: string
+          tags: string[]
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          email: string
+          tags?: string[]
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          email?: string
+          tags?: string[]
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      campaigns: {
+        Row: {
+          id: string
+          name: string
+          template_id: string | null
+          recipient_tags: string[]
+          status: string
+          sent_at: string | null
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          template_id?: string | null
+          recipient_tags?: string[]
+          status?: string
+          sent_at?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          template_id?: string | null
+          recipient_tags?: string[]
+          status?: string
+          sent_at?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      campaign_recipients: {
+        Row: {
+          id: string
+          campaign_id: string
+          recipient_id: string
+          email_sent: boolean
+          sent_at: string | null
+          error_message: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          campaign_id: string
+          recipient_id: string
+          email_sent?: boolean
+          sent_at?: string | null
+          error_message?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          campaign_id?: string
+          recipient_id?: string
+          email_sent?: boolean
+          sent_at?: string | null
+          error_message?: string | null
+          created_at?: string
+        }
       }
     }
   }

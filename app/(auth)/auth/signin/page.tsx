@@ -60,8 +60,10 @@ export default function SigninPage() {
         });
 
         // Redirect based on user role
+        console.log('######## signin page userData'+ JSON.stringify(userData));
         switch (userData?.role) {
           case "admin":
+            console.log('admin');
             router.push("/admin/dashboard");
             break;
           case "internal":
