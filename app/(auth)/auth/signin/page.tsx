@@ -34,76 +34,103 @@ export default function SigninPage() {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true);
+async function onSubmit(values: z.infer<typeof formSchema>) {
+  setIsLoading(true);
 
-    try {
-      // First get user data to check if they exist and get their role
-      const { data: userData, error: userError } = await db.users.getByEmail(values.email.trim().toLowerCase());
+  try {
+    console.log("🔍 Starting sign-in process");
+    
+    // Sign in with Auth
+    const { data: authData, error: authError } = await db.auth.signInWithPassword({
+      email: values.email,
+      password: values.password
+    });
 
+    console.log("🔍 Auth data:", authData);
+    console.log("🔍 Auth error:", authError);
+
+    if (authError) throw authError;
+
+    if (authData.user) {
+      console.log("✅ User signed in:", authData.user.id);
+      
+      // Get user role to determine redirect
+      const { data: userData, error: userError } = await db.users.getByEmail(
+        values.email.trim().toLowerCase()
+      );
+      
+      console.log("🔍 User data:", userData);
+      console.log("🔍 User error:", userError);
+      
       if (userError && userError.code !== "PGRST116") {
         throw userError;
       }
 
-      // Now sign in with Auth using the correct method and parameter structure
-      const { data: authData, error: authError } = await db.auth.signInWithPassword({
-        email: values.email,
-        password: values.password
-      });
-
-      if (authError) throw authError;
-
-      if (authData.user) {
-        toast({
-          title: "Sign in successful!",
-          description: "Welcome back to 1ShotBuilders.",
-        });
-
-        // Redirect based on user role
-        switch (userData?.role) {
-          case "admin":
-            router.push("/admin/dashboard");
-            break;
-          case "internal":
-            router.push("/internal/dashboard");
-            break;
-          case "franchise":
-            router.push("/franchise/dashboard");
-            break;
-          case "client":
-            router.push("/client/dashboard");
-            break;
-          default:
-            router.push("/dashboard");
-        }
-      }
-    } catch (error: any) {
-      console.error("Sign in error:", error);
       toast({
-        title: "Error signing in",
-        description: error.message || "Invalid credentials. Please try again.",
-        variant: "destructive",
+        title: "Sign in successful!",
+        description: "Welcome back to 1ShotBuilders.",
       });
-    } finally {
-      setIsLoading(false);
+
+      const role = userData?.role;
+      console.log("🔍 User role:", role);
+
+      // Refresh the router to update the session state
+      router.refresh();
+      
+      // Small delay to ensure session is set
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Navigate based on role
+      switch (role) {
+        case "admin":
+          console.log("🔄 Redirecting to admin dashboard");
+          router.push("/admin/dashboard");
+          break;
+        case "internal":
+          console.log("🔄 Redirecting to internal dashboard");
+          router.push("/internal/dashboard");
+          break;
+        case "franchise":
+          console.log("🔄 Redirecting to franchise dashboard");
+          router.push("/franchise/dashboard");
+          break;
+        case "client":
+          console.log("🔄 Redirecting to client dashboard");
+          router.push("/client/dashboard");
+          break;
+        default:
+          console.log("🔄 Redirecting to default dashboard");
+          router.push("/dashboard");
+      }
     }
+  } catch (error: any) {
+    console.error("❌ Sign in error:", error);
+    toast({
+      title: "Error signing in",
+      description: error.message || "Invalid credentials. Please try again.",
+      variant: "destructive",
+    });
+  } finally {
+    setIsLoading(false);
   }
+}
+
+
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="min-h-screen flex flex-col">
       <SiteHeader />
-      
-      <div className="flex-1 flex items-center justify-center py-12">
-        <Card className="w-full max-w-md mx-4">
+      <main className="flex-1 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold">Sign in</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-2xl font-bold text-center">Sign In</CardTitle>
+            <CardDescription className="text-center">
               Enter your credentials to access your account
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <CardContent className="space-y-4">
                 <FormField
                   control={form.control}
                   name="email"
@@ -111,62 +138,56 @@ export default function SigninPage() {
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input placeholder="john@example.com" type="email" {...field} />
+                        <Input
+                          {...field}
+                          type="email"
+                          placeholder="Enter your email"
+                          disabled={isLoading}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                
                 <FormField
                   control={form.control}
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <div className="flex items-center justify-between">
-                        <FormLabel>Password</FormLabel>
-                        <Link 
-                          href="/auth/forgot-password" 
-                          className="text-sm text-primary hover:underline"
-                        >
-                          Forgot password?
-                        </Link>
-                      </div>
+                      <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <Input placeholder="********" type="password" {...field} />
+                        <Input
+                          {...field}
+                          type="password"
+                          placeholder="Enter your password"
+                          disabled={isLoading}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Signing in...
-                    </>
-                  ) : (
-                    "Sign In"
-                  )}
+              </CardContent>
+              <CardFooter className="flex flex-col space-y-4">
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={isLoading}
+                >
+                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Sign In
                 </Button>
-              </form>
-            </Form>
-          </CardContent>
-          <CardFooter className="flex flex-col space-y-4">
-            <div className="text-sm text-muted-foreground text-center w-full">
-              Don&apos;t have an account?{" "}
-              <Link href="/auth/signup" className="text-primary hover:underline">
-                Sign up
-              </Link>
-            </div>
-            <div className="text-sm text-muted-foreground text-center w-full">
-              Want to become a franchise? <Link href="/franchise/apply" className="text-primary hover:underline">Apply here</Link>
-            </div>
-          </CardFooter>
+                <div className="text-center text-sm">
+                  Don't have an account?{" "}
+                  <Link href="/auth/signup" className="text-primary hover:underline">
+                    Sign up
+                  </Link>
+                </div>
+              </CardFooter>
+            </form>
+          </Form>
         </Card>
-      </div>
-      
+      </main>
       <SiteFooter />
     </div>
   );

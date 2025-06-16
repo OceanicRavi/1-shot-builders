@@ -6,87 +6,112 @@ export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
   const supabase = createMiddlewareClient({ req, res });
   
+  console.log("🔍 Middleware - Path:", req.nextUrl.pathname);
+  
   const {
     data: { session },
+    error: sessionError
   } = await supabase.auth.getSession();
 
-  if (req.nextUrl.pathname === "/franchise/apply") {
+  console.log("🔍 Middleware - Session exists:", !!session);
+  console.log("🔍 Middleware - Session error:", sessionError);
+  console.log("🔍 Middleware - User ID:", session?.user?.id);
+
+  const pathname = req.nextUrl.pathname;
+
+  // Always allow franchise/apply page
+  if (pathname === "/franchise/apply") {
+    console.log("✅ Allowing franchise/apply");
     return res;
   }
+
   // Auth routes - redirect to dashboard if already authenticated
-  if (req.nextUrl.pathname.startsWith("/auth/") && session) {
+  if (pathname.startsWith("/auth/") && session) {
+    console.log("🔄 Redirecting authenticated user from auth page to dashboard");
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
   // Protected routes - require authentication
-  if (
-    
-    (req.nextUrl.pathname.startsWith("/dashboard") ||
-     req.nextUrl.pathname.startsWith("/admin/") ||
-     req.nextUrl.pathname.startsWith("/internal/") ||
-     req.nextUrl.pathname.startsWith("/client/") ||
-     req.nextUrl.pathname === "/profile" ||
-     req.nextUrl.pathname === "/settings") && 
-    !session
-  ) {
+  const protectedRoutes = [
+    "/dashboard",
+    "/admin",
+    "/internal", 
+    "/client",
+    "/franchise/dashboard",
+    "/profile",
+    "/settings"
+  ];
+
+  const isProtectedRoute = protectedRoutes.some(route => 
+    pathname.startsWith(route) || pathname === route
+  );
+
+  console.log("🔍 Is protected route:", isProtectedRoute);
+
+  if (isProtectedRoute && !session) {
+    console.log("❌ No session for protected route, redirecting to signin");
     return NextResponse.redirect(new URL("/auth/signin", req.url));
   }
 
-  // Role-based route protection
-  if (session) {
+  // Role-based route protection - ONLY for authenticated users
+  if (session && isProtectedRoute) {
+    console.log("🔍 Checking user role...");
+    
     const { data: userData, error } = await supabase
       .from("users")
       .select("role")
-      .eq("id", session.user.id)
+      .eq("auth_id", session.user.id)
       .single();
 
+    console.log("🔍 User data:", userData);
+    console.log("🔍 User role error:", error);
+
     if (error) {
-      console.error("Error fetching user role:", error);
+      console.error("❌ Error fetching user role:", error);
+      // Don't redirect to signin if we can't fetch role - might be a temporary DB issue
       return res;
     }
 
     const role = userData?.role || "user";
+    console.log("🔍 User role:", role);
 
-    // Admin routes
-    if (req.nextUrl.pathname.startsWith("/admin/") && role !== "admin") {
+    // Check role permissions
+    if (pathname.startsWith("/admin/") && role !== "admin") {
+      console.log("❌ Non-admin trying to access admin route");
       return NextResponse.redirect(new URL("/dashboard", req.url));
     }
 
-    // Internal routes
-    if (req.nextUrl.pathname.startsWith("/internal/") && role !== "internal" && role !== "admin") {
+    if (pathname.startsWith("/internal/") && !["internal", "admin"].includes(role)) {
+      console.log("❌ Non-internal user trying to access internal route");
       return NextResponse.redirect(new URL("/dashboard", req.url));
     }
 
-    // Franchise routes
-    if (req.nextUrl.pathname.startsWith("/franchise/dashboard") && role !== "franchise" && role !== "admin") {
+    if (pathname.startsWith("/franchise/dashboard") && !["franchise", "admin"].includes(role)) {
+      console.log("❌ Non-franchise user trying to access franchise route");
       return NextResponse.redirect(new URL("/dashboard", req.url));
     }
 
-    // Client routes
-    if (req.nextUrl.pathname.startsWith("/client/") && role !== "client" && role !== "admin") {
+    if (pathname.startsWith("/client/") && !["client", "admin"].includes(role)) {
+      console.log("❌ Non-client user trying to access client route");  
       return NextResponse.redirect(new URL("/dashboard", req.url));
     }
+
+    console.log("✅ Access allowed for role:", role);
   }
 
+  console.log("✅ Middleware allowing request");
   return res;
 }
 
 export const config = {
   matcher: [
-    // Match all protected routes individually (explicit)
     "/dashboard/:path*",
-    "/admin/:path*",
+    "/admin/:path*", 
     "/internal/:path*",
     "/client/:path*",
+    "/franchise/dashboard/:path*",
     "/profile",
-    "/settings",
-    "/auth/:path*",
-    "/franchise/dashboard",
-    "/franchise/projects",
-    "/franchise/documents/upload",
-    "/franchise/clients",
-    "/franchise/settings",
+    "/settings", 
+    "/auth/:path*"
   ],
 };
-
-

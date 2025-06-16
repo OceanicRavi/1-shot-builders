@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Facebook, Instagram, Linkedin, Mail, Twitter } from "lucide-react";
+import { Facebook, Instagram } from "lucide-react";
 import AIWidget from "./AIAgent";
 
 export function SiteFooter() {
@@ -92,14 +92,14 @@ export function SiteFooter() {
               <p>20 Keats Place</p>
               <p>Blockhouse Bay</p>
               <p>Auckland, New Zealand</p>
-              <p className="mt-2">
-                    <p className="text-muted-foreground">
+              <div className="mt-2">
+                    <div className="text-muted-foreground">
                       Contact <b>Mayur</b> on <a href="tel:+64220429642" className="hover:text-primary">(+64) 022-042-9642</a>
-                    </p>
-                    <p className="text-muted-foreground">
+                    </div>
+                    <div className="text-muted-foreground">
                       Contact <b>Prashant</b> on <a href="tel:+64277771483" className="hover:text-primary">(+64) 027-777-1483</a>
-                    </p>
-              </p>
+                    </div>
+              </div>
               <p>
                 <a href="mailto:we@1shotbuilders.co.nz" className="hover:text-primary">
                   we@1shotbuilders.co.nz
