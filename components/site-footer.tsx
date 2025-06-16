@@ -87,7 +87,7 @@ export function SiteFooter() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-4">Contact</h4>
+            <h4 className="font-semibold mb-4">Contact Us</h4>
             <address className="not-italic text-muted-foreground">
               <p>20 Keats Place</p>
               <p>Blockhouse Bay</p>
