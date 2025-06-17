@@ -37,7 +37,7 @@ const routes = [
 
 export function SiteHeader() {
   const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [siteHeaderLoading, setSiteHeaderLoading] = useState(true);
   const supabase = createClientComponentClient();
 
   useEffect(() => {
@@ -89,13 +89,13 @@ export function SiteHeader() {
           setUser(null);
         }
       } catch (error) {
-        console.error("Error loading user:", error);
+        console.error("Error siteHeaderLoading user:", error);
         if (isMounted) {
           setUser(null);
         }
       } finally {
         if (isMounted) {
-          setLoading(false);
+          setSiteHeaderLoading(false);
         }
       }
     };
@@ -111,11 +111,11 @@ export function SiteHeader() {
         if (event === 'SIGNED_OUT') {
           if (isMounted) {
             setUser(null);
-            setLoading(false);
+            setSiteHeaderLoading(false);
           }
         } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
           if (session?.user && isMounted) {
-            setLoading(true);
+            setSiteHeaderLoading(true);
             await getUser();
           }
         } else if (event === 'INITIAL_SESSION') {
@@ -123,7 +123,7 @@ export function SiteHeader() {
           if (session?.user && isMounted) {
             await getUser();
           } else if (isMounted) {
-            setLoading(false);
+            setSiteHeaderLoading(false);
           }
         }
       }
@@ -174,7 +174,7 @@ export function SiteHeader() {
             <ThemeToggle />
           </div>
           
-          {loading ? (
+          {siteHeaderLoading ? (
             <div className="flex items-center space-x-2">
               <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
             </div>
