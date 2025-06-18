@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import MobileMenu from "@/components/mobile-menu";
@@ -39,57 +39,87 @@ export function SiteHeader() {
   const [user, setUser] = useState<any>(null);
   const [siteHeaderLoading, setSiteHeaderLoading] = useState(true);
   const supabase = createClientComponentClient();
+  const lastSessionRef = useRef<string | null>(null);
+  const isLoadingRef = useRef(false);
 
   useEffect(() => {
     let isMounted = true;
 
-    const getUser = async () => {
+    const fetchUserData = async (sessionUser: any) => {
       try {
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+         // Debug log
         
-        console.log("Session data:", session); // Debug log
-        
-        if (sessionError) {
-          console.error("Session error:", sessionError);
-          throw sessionError;
+        const { data: userData, error: userError } = await db.users.getByAuthId(sessionUser.id);
+
+        if (userError) {
+          console.error("User data error:", userError);
+          // Still return fallback user data even if DB query fails
+          return {
+            id: sessionUser.id,
+            email: sessionUser.email,
+            name: sessionUser.user_metadata?.full_name || sessionUser.user_metadata?.name || sessionUser.email
+          };
         }
-        
-        if (session?.user && isMounted) {
-          console.log("Found session user:", session.user.id); // Debug log
+
+        // If no user data in DB, return session data as fallback
+        if (!userData) {
           
-          try {
-            const { data: userData, error: userError } = await db.users.getByAuthId(session.user.id);
-            
-            if (userError) {
-              console.error("User data error:", userError);
-              // Don't throw here, just use session data as fallback
-            }
-            
-            console.log("User data from DB:", userData); // Debug log
-            
-            if (isMounted) {
-              setUser(userData || { 
-                id: session.user.id,
-                email: session.user.email,
-                name: session.user.user_metadata?.full_name || session.user.email
-              });
-            }
-          } catch (dbError) {
-            console.error("Database error:", dbError);
-            // Fallback to session data if DB fails
-            if (isMounted) {
-              setUser({
-                id: session.user.id,
-                email: session.user.email,
-                name: session.user.user_metadata?.full_name || session.user.email
-              });
-            }
+          return {
+            id: sessionUser.id,
+            email: sessionUser.email,
+            name: sessionUser.user_metadata?.full_name || sessionUser.user_metadata?.name || sessionUser.email
+          };
+        }
+
+        return userData;
+      } catch (dbError) {
+        console.error("Database error:", dbError);
+        // Always return fallback user data to prevent infinite loading
+        return {
+          id: sessionUser.id,
+          email: sessionUser.email,
+          name: sessionUser.user_metadata?.full_name || sessionUser.user_metadata?.name || sessionUser.email
+        };
+      }
+    };
+
+    const handleAuthState = async (session: any, showLoading = true) => {
+      if (!isMounted || isLoadingRef.current) return;
+
+      const sessionId = session?.user?.id || null;
+
+      // Skip if same session
+      if (lastSessionRef.current === sessionId) {
+        if (isMounted && siteHeaderLoading) {
+          setSiteHeaderLoading(false);
+        }
+        return;
+      }
+
+      isLoadingRef.current = true;
+      lastSessionRef.current = sessionId;
+
+      if (showLoading && isMounted) {
+        setSiteHeaderLoading(true);
+      }
+
+      try {
+        if (session?.user) {
+           // Debug log
+          const userData = await fetchUserData(session.user);
+           // Debug log
+          
+          if (isMounted) {
+            setUser(userData);
           }
-        } else if (isMounted) {
-          setUser(null);
+        } else {
+           // Debug log
+          if (isMounted) {
+            setUser(null);
+          }
         }
       } catch (error) {
-        console.error("Error siteHeaderLoading user:", error);
+        console.error("Error handling auth state:", error);
         if (isMounted) {
           setUser(null);
         }
@@ -97,40 +127,87 @@ export function SiteHeader() {
         if (isMounted) {
           setSiteHeaderLoading(false);
         }
+        isLoadingRef.current = false;
       }
     };
 
-    // Initial load
-    getUser();
+    // Initial load - get session once
+    const initializeAuth = async () => {
+      try {
+         // Debug log
+        const { data: { session }, error } = await supabase.auth.getSession();
 
-    // Listen for auth changes
+        if (error) {
+          console.error("Session error:", error);
+          if (isMounted) {
+            setSiteHeaderLoading(false);
+          }
+          return;
+        }
+
+         // Debug log
+        await handleAuthState(session, true);
+      } catch (error) {
+        console.error("Initialize auth error:", error);
+        if (isMounted) {
+          setSiteHeaderLoading(false);
+        }
+      }
+    };
+
+    initializeAuth();
+
+    // Listen for auth changes - but be selective
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log("Auth state change:", event, session?.user?.id); // Debug log
-        
-        if (event === 'SIGNED_OUT') {
-          if (isMounted) {
+         // Debug log
+
+        if (!isMounted) return;
+
+        switch (event) {
+          case 'SIGNED_IN':
+            await handleAuthState(session, true);
+            break;
+
+          case 'SIGNED_OUT':
+             // Debug log
+            lastSessionRef.current = null;
             setUser(null);
             setSiteHeaderLoading(false);
-          }
-        } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-          if (session?.user && isMounted) {
-            setSiteHeaderLoading(true);
-            await getUser();
-          }
-        } else if (event === 'INITIAL_SESSION') {
-          // Handle initial session load
-          if (session?.user && isMounted) {
-            await getUser();
-          } else if (isMounted) {
-            setSiteHeaderLoading(false);
-          }
+            break;
+
+          case 'TOKEN_REFRESHED':
+            // Don't refetch user data on token refresh, just update session reference
+            if (session?.user?.id && lastSessionRef.current !== session.user.id) {
+              await handleAuthState(session, false);
+            } else {
+              // Just stop loading if it's the same user
+              setSiteHeaderLoading(false);
+            }
+            break;
+
+          // Handle initial session case
+          case 'INITIAL_SESSION':
+            if (session) {
+              await handleAuthState(session, true);
+            } else {
+              setSiteHeaderLoading(false);
+            }
+            break;
+
+          // Ignore other events to prevent rate limiting
+          default:
+            if (isMounted) {
+              setSiteHeaderLoading(false);
+            }
+            break;
         }
       }
     );
 
     return () => {
       isMounted = false;
+      isLoadingRef.current = false;
       subscription.unsubscribe();
     };
   }, [supabase]);
@@ -173,7 +250,7 @@ export function SiteHeader() {
           <div className="w-full flex-1 md:w-auto md:flex-none">
             <ThemeToggle />
           </div>
-          
+
           {siteHeaderLoading ? (
             <div className="flex items-center space-x-2">
               <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
@@ -190,7 +267,7 @@ export function SiteHeader() {
               </Link>
             </div>
           )}
-          
+
           <div className="md:hidden">
             <MobileMenu routes={routes} user={user} />
           </div>

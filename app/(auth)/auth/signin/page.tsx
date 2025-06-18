@@ -38,7 +38,7 @@ async function onSubmit(values: z.infer<typeof formSchema>) {
   setIsLoading(true);
 
   try {
-    console.log("🔍 Starting sign-in process");
+    
     
     // Sign in with Auth
     const { data: authData, error: authError } = await db.auth.signInWithPassword({
@@ -46,21 +46,21 @@ async function onSubmit(values: z.infer<typeof formSchema>) {
       password: values.password
     });
 
-    console.log("🔍 Auth data:", authData);
-    console.log("🔍 Auth error:", authError);
+    
+    
 
     if (authError) throw authError;
 
     if (authData.user) {
-      console.log("✅ User signed in:", authData.user.id);
+      
       
       // Get user role to determine redirect
       const { data: userData, error: userError } = await db.users.getByEmail(
         values.email.trim().toLowerCase()
       );
       
-      console.log("🔍 User data:", userData);
-      console.log("🔍 User error:", userError);
+      
+      
       
       if (userError && userError.code !== "PGRST116") {
         throw userError;
@@ -72,7 +72,7 @@ async function onSubmit(values: z.infer<typeof formSchema>) {
       });
 
       const role = userData?.role;
-      console.log("🔍 User role:", role);
+      
 
       // Refresh the router to update the session state
       router.refresh();
@@ -83,23 +83,23 @@ async function onSubmit(values: z.infer<typeof formSchema>) {
       // Navigate based on role
       switch (role) {
         case "admin":
-          console.log("🔄 Redirecting to admin dashboard");
+          
           router.push("/admin/dashboard");
           break;
         case "internal":
-          console.log("🔄 Redirecting to internal dashboard");
+          
           router.push("/internal/dashboard");
           break;
         case "franchise":
-          console.log("🔄 Redirecting to franchise dashboard");
+          
           router.push("/franchise/dashboard");
           break;
         case "client":
-          console.log("🔄 Redirecting to client dashboard");
+          
           router.push("/client/dashboard");
           break;
         default:
-          console.log("🔄 Redirecting to default dashboard");
+          
           router.push("/dashboard");
       }
     }

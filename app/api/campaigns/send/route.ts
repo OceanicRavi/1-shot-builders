@@ -11,7 +11,7 @@ const supabase = createClient(
 export async function POST(req: NextRequest) {
     try {
         const { campaignId } = await req.json();
-        console.log('✅ Campaign ID ' + campaignId);
+        
         if (!campaignId) {
             return NextResponse.json(
                 { success: false, error: 'Campaign ID is required' },
@@ -25,8 +25,8 @@ export async function POST(req: NextRequest) {
             .select('*')
             .eq('id', campaignId)
             .single();
-        console.log('✅ Campaign found ' + campaign?.id);
-        console.log('✅ Campaign error ' + campaignError);
+        
+        
         if (campaignError || !campaign) {
             return NextResponse.json(
                 { success: false, error: 'Campaign not found' },

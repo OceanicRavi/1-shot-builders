@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Plus, Send, Eye, X } from "lucide-react";
+import { Loader2, Plus, Send, Eye, X, Trash2 } from "lucide-react";
 import { db } from "@/lib/services/database";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -56,6 +56,7 @@ export default function CampaignsPage() {
   const [showPreview, setShowPreview] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [sending, setSending] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
   // Form fields
   const [name, setName] = useState("");
@@ -201,7 +202,7 @@ export default function CampaignsPage() {
       });
 
       if (!response.ok) {
-        console.log(' campaign api error '+ JSON.stringify(response));
+        console.log(' campaign api error ' + JSON.stringify(response));
         const error = await response.json();
         throw new Error(error.error || 'Failed to send campaign');
       }
@@ -236,6 +237,34 @@ export default function CampaignsPage() {
 
   // Get all unique tags from recipients
   const allTags = Array.from(new Set(recipients.flatMap(r => r.tags || [])));
+
+  const handleDelete = async (recipientId: string) => {
+    if (!confirm("Are you sure you want to delete this campaign?")) {
+      return;
+    }
+
+    setDeleting(recipientId);
+
+    try {
+      const { error } = await db.campaigns.delete(recipientId);
+      if (error) throw error;
+
+      toast({
+        title: "Recipient deleted",
+        description: "Recipient has been deleted",
+      });
+
+      loadData();
+    } catch (error: any) {
+      toast({
+        title: "Delete failed",
+        description: error.message || "Something went wrong",
+        variant: "destructive",
+      });
+    } finally {
+      setDeleting(null);
+    }
+  };
 
   if (loading) {
     return (
@@ -304,7 +333,7 @@ export default function CampaignsPage() {
                     </TableCell>
                     <TableCell className="text-right">
                       {campaign.template_id && (
-                        <Button
+                        <><Button
                           variant="outline"
                           size="sm"
                           onClick={() => previewTemplateHandler(campaign.template_id!)}
@@ -312,6 +341,19 @@ export default function CampaignsPage() {
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => handleDelete(campaign.id)}
+                            disabled={deleting === campaign.id}
+                          >
+                            {deleting === campaign.id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </>
                       )}
                       {campaign.status === 'draft' && (
                         <Button
