@@ -17,7 +17,14 @@ export async function POST(req: NextRequest) {
 
     const result = await sendContactEmail({ name, email, phone, subject, message });
 
-    return NextResponse.json({ success: true, result });
+    if (result.success) {
+      return NextResponse.json({ success: true, message: "Email sent successfully." });
+    } else {
+      return NextResponse.json(
+        { success: false, message: "Failed to send email", error: result.error },
+        { status: 500 }
+      );
+    }
   } catch (error: any) {
     console.error('Email error:', error);
     return NextResponse.json(
