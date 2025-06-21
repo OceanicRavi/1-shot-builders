@@ -4,9 +4,11 @@ import { Inter } from 'next/font/google';
 import { Providers } from '@/components/providers';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
 
 const inter = Inter({ subsets: ['latin'] });
-
+export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: '1ShotBuilders - Premier Construction & Renovation Services',
   description: 'Professional construction and renovation services tailored to your needs. From residential to commercial projects, we deliver quality craftsmanship in one shot.',
@@ -15,11 +17,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const supabase = createServerComponentClient({ cookies })
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn(inter.className, "min-h-screen bg-background antialiased")}>
