@@ -34,86 +34,86 @@ export default function SigninPage() {
     },
   });
 
-async function onSubmit(values: z.infer<typeof formSchema>) {
-  setIsLoading(true);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true);
 
-  try {
-    
-    
-    // Sign in with Auth
-    const { data: authData, error: authError } = await db.auth.signInWithPassword({
-      email: values.email,
-      password: values.password
-    });
+    try {
 
-    
-    
 
-    if (authError) throw authError;
-
-    if (authData.user) {
-      
-      
-      // Get user role to determine redirect
-      const { data: userData, error: userError } = await db.users.getByEmail(
-        values.email.trim().toLowerCase()
-      );
-      
-      
-      
-      
-      if (userError && userError.code !== "PGRST116") {
-        throw userError;
-      }
-
-      toast({
-        title: "Sign in successful!",
-        description: "Welcome back to 1ShotBuilders.",
+      // Sign in with Auth
+      const { data: authData, error: authError } = await db.auth.signInWithPassword({
+        email: values.email,
+        password: values.password
       });
 
-      const role = userData?.role;
-      
 
-      // Refresh the router to update the session state
-      router.refresh();
-      
-      // Small delay to ensure session is set
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Navigate based on role
-      switch (role) {
-        case "admin":
-          
-          router.push("/admin/dashboard");
-          break;
-        case "internal":
-          
-          router.push("/internal/dashboard");
-          break;
-        case "franchise":
-          
-          router.push("/franchise/dashboard");
-          break;
-        case "client":
-          
-          router.push("/client/dashboard");
-          break;
-        default:
-          
-          router.push("/dashboard");
+
+
+      if (authError) throw authError;
+
+      if (authData.user) {
+
+
+        // Get user role to determine redirect
+        const { data: userData, error: userError } = await db.users.getByEmail(
+          values.email.trim().toLowerCase()
+        );
+
+
+
+
+        if (userError && userError.code !== "PGRST116") {
+          throw userError;
+        }
+
+        toast({
+          title: "Sign in successful!",
+          description: "Welcome back to 1ShotBuilders.",
+        });
+
+        const role = userData?.role;
+
+
+        // Refresh the router to update the session state
+        router.refresh();
+
+        // Small delay to ensure session is set
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        // Navigate based on role
+        switch (role) {
+          case "admin":
+
+            router.push("/admin/dashboard");
+            break;
+          case "internal":
+
+            router.push("/internal/dashboard");
+            break;
+          case "franchise":
+
+            router.push("/franchise/dashboard");
+            break;
+          case "client":
+
+            router.push("/client/dashboard");
+            break;
+          default:
+
+            router.push("/dashboard");
+        }
       }
+    } catch (error: any) {
+      console.error("❌ Sign in error:", error);
+      toast({
+        title: "Error signing in",
+        description: error.message || "Invalid credentials. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
-  } catch (error: any) {
-    console.error("❌ Sign in error:", error);
-    toast({
-      title: "Error signing in",
-      description: error.message || "Invalid credentials. Please try again.",
-      variant: "destructive",
-    });
-  } finally {
-    setIsLoading(false);
   }
-}
 
 
 
@@ -154,14 +154,17 @@ async function onSubmit(values: z.infer<typeof formSchema>) {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <div className="flex items-center justify-between">
+                        <FormLabel>Password</FormLabel>
+                        <Link
+                          href="/auth/forgot-password"
+                          className="text-sm text-primary hover:underline"
+                        >
+                          Forgot password?
+                        </Link>
+                      </div>
                       <FormControl>
-                        <Input
-                          {...field}
-                          type="password"
-                          placeholder="Enter your password"
-                          disabled={isLoading}
-                        />
+                        <Input placeholder="********" type="password" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -182,6 +185,9 @@ async function onSubmit(values: z.infer<typeof formSchema>) {
                   <Link href="/auth/signup" className="text-primary hover:underline">
                     Sign up
                   </Link>
+                </div>
+                <div className="text-sm text-muted-foreground text-center w-full">
+                  Want to become a franchise? <Link href="/franchise/apply" className="text-primary hover:underline">Apply here</Link>
                 </div>
               </CardFooter>
             </form>
