@@ -416,8 +416,9 @@ function ProjectCard({ project, onViewDetails }: { project: any; onViewDetails: 
 
   return (
     <Card
-      className="overflow-hidden transition-all hover:shadow-xl group bg-white border-slate-200 dark:bg-slate-900 dark:border-slate-800"
-      onMouseEnter={() => setIsHovered(true)}
+    className={`overflow-hidden transition-all hover:shadow-xl group bg-white 
+    ${project.highlighted ? 'border-2 border-blue-500' : 'border border-slate-200 dark:border-slate-800'}
+    dark:bg-slate-900`}      onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="relative aspect-video overflow-hidden">
