@@ -209,6 +209,9 @@ export default function ProjectsPage() {
       filtered = filtered.filter(project => project.status === status);
     }
 
+   // Sort: highlighted projects come first
+    filtered.sort((a, b) => Number(b.highlighted) - Number(a.highlighted));
+
     setFilteredProjects(filtered);
   };
 
@@ -234,9 +237,11 @@ export default function ProjectsPage() {
         }, null, 2));
         throw error;
       }
-
+      
       setProjects(data || []);
-      setFilteredProjects(data || []);
+      // setFilteredProjects(data || []);
+      
+      
     } catch (error: any) {
       console.error("[loadProjects] Caught error:", JSON.stringify({
         errorType: typeof error,
@@ -256,9 +261,17 @@ export default function ProjectsPage() {
     }
   }
 
+  // useEffect(() => {
+  //   loadProjects();
+  // }, []);
+
   useEffect(() => {
-    loadProjects();
-  }, []);
+  loadProjects();
+  if (projects.length > 0) {
+    filterProjects(activeTab, activeStatus);
+  }
+  }, [projects, activeTab, activeStatus]);
+
 
   if (loading) {
     return (
