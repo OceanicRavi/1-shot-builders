@@ -57,9 +57,12 @@ export default function TestimonialsPage() {
   const { toast } = useToast();
   const router = useRouter();
 
-  useEffect(() => {
-    loadData();
-  }, []);
+useEffect(() => {
+  loadData().then(() => {
+    
+  });
+}, []);
+
 
   const loadData = async () => {
     try {

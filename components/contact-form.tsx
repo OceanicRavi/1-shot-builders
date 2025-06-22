@@ -47,15 +47,13 @@ export default function ContactForm() {
     setIsSubmitting(true);
     
     try {
-      // In a real app, you would submit this to your API
-      // const response = await fetch("/api/contact", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify(values),
-      // });
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) throw new Error("Failed to send");
       
       toast({
         title: "Message sent successfully!",
