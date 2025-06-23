@@ -209,6 +209,9 @@ export default function ProjectsPage() {
       filtered = filtered.filter(project => project.status === status);
     }
 
+   // Sort: highlighted projects come first
+    filtered.sort((a, b) => Number(b.highlighted) - Number(a.highlighted));
+
     setFilteredProjects(filtered);
   };
 
@@ -234,9 +237,11 @@ export default function ProjectsPage() {
         }, null, 2));
         throw error;
       }
-
+      
       setProjects(data || []);
-      setFilteredProjects(data || []);
+      // setFilteredProjects(data || []);
+      
+      
     } catch (error: any) {
       console.error("[loadProjects] Caught error:", JSON.stringify({
         errorType: typeof error,
@@ -256,9 +261,17 @@ export default function ProjectsPage() {
     }
   }
 
+  // useEffect(() => {
+  //   loadProjects();
+  // }, []);
+
   useEffect(() => {
-    loadProjects();
-  }, []);
+  loadProjects();
+  if (projects.length > 0) {
+    filterProjects(activeTab, activeStatus);
+  }
+  }, [projects, activeTab, activeStatus]);
+
 
   if (loading) {
     return (
@@ -403,8 +416,9 @@ function ProjectCard({ project, onViewDetails }: { project: any; onViewDetails: 
 
   return (
     <Card
-      className="overflow-hidden transition-all hover:shadow-xl group bg-white border-slate-200 dark:bg-slate-900 dark:border-slate-800"
-      onMouseEnter={() => setIsHovered(true)}
+    className={`overflow-hidden transition-all hover:shadow-xl group bg-white 
+    ${project.highlighted ? 'border-2 border-blue-500' : 'border border-slate-200 dark:border-slate-800'}
+    dark:bg-slate-900`}      onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="relative aspect-video overflow-hidden">
