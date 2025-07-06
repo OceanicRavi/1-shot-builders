@@ -43,152 +43,6 @@ interface Project {
   deleted_at?: string;
 }
 
-/* const projects = [
-  {
-    "id": 1,
-    "title": "Modern Family Makeover",
-    "address": "Rata St, New Lynn",
-    "description": "This complete home renovation brought a fresh, modern look to a family home in New Lynn. The kitchen and bathroom were fully tiled with elegant finishes, while the rest of the house received a professional interior repaint, enhancing brightness and space. The transformation balanced style with functionality, perfect for a growing family.",
-    "image": "/images/projects/1/IMG_9679.jpg",
-    "category": "renovations",
-    "status": "completed",
-    "location": "New Lynn, Auckland",
-    "tags": ["Residential", "Renovation", "Kitchen", "Bathroom", "Painting"],
-    "images": [
-      "/images/projects/1/IMG_9679.jpg",
-      "/images/projects/1/IMG_9680.jpg"
-    ]
-  },
-  {
-    "id": 2,
-    "title": "Stylish Bathroom Refresh",
-    "address": "Dominion Road",
-    "description": "A compact bathroom was transformed into a sleek retreat with modern aesthetics. High-end wall and floor tiles, minimalist cabinetry, and a frameless shower enclosure turned this functional space into a spa-like oasis, ideal for both relaxation and everyday practicality.",
-    "image": "/images/projects/2/1.JPG",
-    "category": "renovations",
-    "status": "completed",
-    "location": "Hillsborough, Auckland",
-    "tags": ["Residential", "Renovation", "Bathroom"],
-    "images": [
-      "/images/projects/2/1.JPG",
-      "/images/projects/2/2.JPG",
-      "/images/projects/2/3.JPG",
-      "/images/projects/2/4.JPG"
-    ]
-  },
-  {
-    "id": 3,
-    "title": "Deck & Dine Upgrade",
-    "address": "Blockhouse Bay Road",
-    "description": "This renovation combined indoor elegance with outdoor charm. A beautifully tiled kitchen was added alongside a new timber deck that opened up the dining area. It provided seamless indoor-outdoor flow, making the space ideal for hosting guests and weekend family barbecues.",
-    "image": "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-    "category": "renovations",
-    "status": "completed",
-    "location": "Blockhouse Bay, Auckland",
-    "tags": ["Residential", "Renovation", "Kitchen", "Deck"]
-  },
-  {
-    "id": 4,
-    "title": "Luxury Kitchen Revamp ",
-    "address": "Blockhouse Bay Road",
-    "description": "A small kitchen space was elevated with luxurious finishes and smart design choices. Premium tiles, sleek cabinetry, and innovative storage solutions gave the space a contemporary feel without sacrificing functionality. The transformation brought a designer kitchen look to a compact home.",
-    "image": "/images/projects/4/1.jpg",
-    "category": "renovations",
-    "status": "completed",
-    "location": "Blockhouse Bay, Auckland",
-    "tags": ["Residential", "Renovation", "Kitchen"],
-    "images": [
-      "/images/projects/4/1.jpg",
-      "/images/projects/4/2.jpg",
-      "/images/projects/4/3.jpg",
-      "/images/projects/4/4.jpg",
-      "/images/projects/4/5.jpg"
-    ]
-  },
-  {
-    "id": 5,
-    "title": "Custom Dream Home",
-    "address": "20 Keats Place, Blockhouse Bay",
-    "description": "A newly constructed, custom-designed 5-bedroom family home that reflects both elegance and functionality. The property includes spacious open-plan living areas, a gourmet kitchen with island bench, and four luxurious bathrooms. Every detail was designed to suit modern family lifestyles.",
-    "image": "/images/projects/5/1.jpg",
-    "category": "new-builds",
-    "status": "completed",
-    "location": "Blockhouse Bay, Auckland",
-    "tags": ["Residential", "New Build", "Kitchen", "Bathroom", "Living Room"],
-    "images": [
-      "/images/projects/5/1.jpg",
-      "/images/projects/5/2.jpg",
-      "/images/projects/5/3.jpg",
-      "/images/projects/5/4.jpg"
-    ]
-  },
-  {
-    "id": 6,
-    "title": "Total Transformation with Outdoor Living",
-    "address": "Takanini",
-    "description": "A full-scale renovation that redefined the entire home layout. Modern bathrooms, an open-plan kitchen, and a newly constructed deck added value and liveability. The large outdoor space was designed for family gatherings, creating a home that works inside and out.",
-    "image": "/images/projects/6/1.JPG",
-    "category": "renovations",
-    "status": "completed",
-    "location": "Takanini, Auckland",
-    "tags": ["Residential", "Renovation", "Deck", "Kitchen", "Bathroom", "Living Room"],
-    "images": [
-      "/images/projects/6/1.JPG",
-      "/images/projects/6/2.jpg",
-      "/images/projects/6/3.JPG"
-    ]
-  },
-  {
-    "id": 7,
-    "title": "Compact Comfort Upgrade",
-    "address": "18 Kelman Road, Kelston",
-    "description": "A creative renovation that turned a compact house into a comfortable and stylish living space. Fresh paint, a smart studio setup, and subtle design tweaks improved flow and functionality without major structural changes, perfect for small families or renters.",
-    "image": "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-    "category": "renovations",
-    "status": "completed",
-    "location": "Kelston, Auckland",
-    "tags": ["Residential", "Renovation", "Studio", "Living Room", "Painting"]
-  },
-  {
-    "id": 8,
-    "title": "Dual Living Elegance",
-    "address": "10 Maui Pomare St, Blockhouse Bay",
-    "description": "An in progress project to build dual modern units, each offering three bedrooms, two bathrooms, and open-concept kitchen-living areas. Designed with growing families in mind, this project aims to deliver low-maintenance, high-quality homes in a prime suburban location.",
-    "image": "/images/projects/8/1.jpg",
-    "category": "new-builds",
-    "status": "in_progress",
-    "location": "Blockhouse Bay, Auckland",
-    "tags": ["Residential", "New Build", "Kitchen", "Bathroom", "Lounge"],
-    "images": [
-      "/images/projects/8/1.jpg",
-      "/images/projects/8/2.jpg",
-      "/images/projects/8/3.jpg"
-    ]
-  },
-  {
-    "id": 9,
-    "title": "Hillside Luxury Homes",
-    "address": "553 Hillsborough Road, Mt Roskill",
-    "description": "Currently under construction, this project features multi-lot hillside residences with panoramic views. Each home includes multiple lounges, state-of-the-art kitchens, and spacious bathrooms, tailored for extended families or multi-generational living.",
-    "image": "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-    "category": "new-builds",
-    "status": "in_progress",
-    "location": "Mount Roskill, Auckland",
-    "tags": ["Residential", "New Build", "Kitchen", "Bathroom", "Lounge", "Living Room"]
-  },
-  {
-    "id": 10,
-    "title": "Urban Family Complex",
-    "address": "4253 Great North Road, Glendene",
-    "description": "This in progress development includes five thoughtfully planned units designed for urban families. Each unit features open-plan living areas, dedicated study rooms, modern kitchens, and private outdoor spaces. A strong focus on layout and usability makes this a standout multi-unit project.",
-    "image": "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-    "category": "new-builds",
-    "status": "in_progress",
-    "location": "Glendene, Auckland",
-    "tags": ["Residential", "New Build", "Kitchen", "Bathroom", "Living Room", "Study"]
-  }
-]; */
-
 export default function ProjectsPage() {
   const [activeTab, setActiveTab] = useState("all");
   const [activeStatus, setActiveStatus] = useState("all");
@@ -209,7 +63,7 @@ export default function ProjectsPage() {
       filtered = filtered.filter(project => project.status === status);
     }
 
-   // Sort: highlighted projects come first
+    // Sort: highlighted projects come first
     filtered.sort((a, b) => Number(b.highlighted) - Number(a.highlighted));
 
     setFilteredProjects(filtered);
@@ -237,11 +91,12 @@ export default function ProjectsPage() {
         }, null, 2));
         throw error;
       }
-      
+
       setProjects(data || []);
-      // setFilteredProjects(data || []);
-      
-      
+      //setFilteredProjects(data || []);
+      //filterProjects(activeTab, activeStatus);
+
+
     } catch (error: any) {
       console.error("[loadProjects] Caught error:", JSON.stringify({
         errorType: typeof error,
@@ -261,15 +116,14 @@ export default function ProjectsPage() {
     }
   }
 
-  // useEffect(() => {
-  //   loadProjects();
-  // }, []);
-
+  // Load projects once on mount
   useEffect(() => {
-  loadProjects();
-  if (projects.length > 0) {
+    loadProjects();
+  }, []); // Empty dependency array - runs only once
+
+  // Filter projects when projects data or filters change
+  useEffect(() => {
     filterProjects(activeTab, activeStatus);
-  }
   }, [projects, activeTab, activeStatus]);
 
 
@@ -416,9 +270,9 @@ function ProjectCard({ project, onViewDetails }: { project: any; onViewDetails: 
 
   return (
     <Card
-    className={`overflow-hidden transition-all hover:shadow-xl group bg-white 
+      className={`overflow-hidden transition-all hover:shadow-xl group bg-white 
     ${project.highlighted ? 'border-2 border-blue-500' : 'border border-slate-200 dark:border-slate-800'}
-    dark:bg-slate-900`}      onMouseEnter={() => setIsHovered(true)}
+    dark:bg-slate-900`} onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="relative aspect-video overflow-hidden">
