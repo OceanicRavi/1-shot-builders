@@ -116,10 +116,10 @@ const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
               Transforming spaces with precision craftsmanship, innovative designs, and exceptional service.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Button asChild size="lg" className="btn-orange">
+              <Button asChild size="lg" className="btn-orange" onClick={() => {}}>
                 <Link href="/contact">Get a Quote</Link>
               </Button>
-              <Button asChild size="lg" className="btn-orange">
+              <Button asChild size="lg" className="btn-orange" onClick={() => {}}>
                 <Link href="/projects">View Our Projects</Link>
               </Button>
             </div>
