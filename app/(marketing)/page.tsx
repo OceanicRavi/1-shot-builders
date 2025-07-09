@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, ChevronRight, PencilRuler, Building, Play } from "lucide-react";
+import { Check, ChevronRight, PencilRuler, Building, Play, CheckCircle2 } from "lucide-react";
 import { SetStateAction, useEffect, useState } from "react";
 import TestimonialsSection from "@/components/client-testimonial";
 import { db } from "@/lib/services/database";
@@ -66,7 +66,7 @@ interface Testimonial {
   image: string;
 }
 export default function Home() {
-const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [testimonialsLoading, setTestimonialsLoading] = useState(true);
   const [testimonialsError, setTestimonialsError] = useState<string | null>(null);
 
@@ -75,12 +75,12 @@ const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
       try {
         setTestimonialsLoading(true);
         setTestimonialsError(null);
-        
+
         const { data, error } = await db.testimonials.publiclist();
         if (error) {
           throw error;
         }
-        
+
         setTestimonials(data || []);
       } catch (error: any) {
         console.error("Error loading testimonials:", error);
@@ -239,40 +239,76 @@ const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
         </div>
       </section>
 
-      {/* Benefits Section */}
-      <section className="py-20 bg-muted">
+      {/* Why Choose Us Section */}
+      <section className="py-20">
         <div className="container">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-3xl font-bold tracking-tight mb-6">Why Choose 1ShotBuilders?</h2>
               <p className="text-muted-foreground mb-8">
-                Our commitment to excellence sets us apart in the construction industry.
-                We believe in delivering quality results that exceed your expectations.
+                Choosing the right construction partner is crucial for your project's success. Here's why clients across New Zealand trust 1ShotBuilders:
               </p>
 
               <ul className="space-y-4">
-                {[
-                  "Expert team with years of industry experience",
-                  "Transparent pricing with no hidden costs",
-                  "On-time project completion guaranteed",
-                  "Premium materials and superior craftsmanship",
-                  "Comprehensive warranty on all our work",
-                ].map((benefit, index) => (
-                  <li key={index} className="flex items-start">
-                    <Check className="h-5 w-5 text-primary mr-2 mt-0.5 flex-shrink-0" />
-                    <span>{benefit}</span>
-                  </li>
-                ))}
+                <li className="flex items-start">
+                  <CheckCircle2 className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <span className="font-semibold">Registered Master Builder and Licensed Building Practitioner (LBP)</span>
+                    <p className="text-muted-foreground">We are proud to be a Registered Master Builder and Licensed Building Practitioner (LBP), ensuring the highest standards of quality, compliance, and professionalism in every project.</p>
+                  </div>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle2 className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <span className="font-semibold">Proven Track Record</span>
+                    <p className="text-muted-foreground">Over a decade of successful projects and satisfied clients.</p>
+                  </div>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle2 className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <span className="font-semibold">Comprehensive Services</span>
+                    <p className="text-muted-foreground">End-to-end solutions from design to completion.</p>
+                  </div>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle2 className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <span className="font-semibold">Expert Team</span>
+                    <p className="text-muted-foreground">Skilled professionals with specialized expertise.</p>
+                  </div>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle2 className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <span className="font-semibold">Quality Guarantee</span>
+                    <p className="text-muted-foreground">We stand behind our work with comprehensive warranties.</p>
+                  </div>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle2 className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <span className="font-semibold">Transparent Process</span>
+                    <p className="text-muted-foreground">Clear communication and no surprises from start to finish.</p>
+                  </div>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle2 className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <span className="font-semibold">Insured and Covered</span>
+                    <p className="text-muted-foreground">Backed by Professional Indemnity and Public Liability Insurance for your peace of mind.</p>
+                  </div>
+                </li>
               </ul>
 
               <div className="mt-8">
-                <Button asChild className="btn-orange">
-                  <Link href="/about">More About Us</Link>
+                <Button asChild>
+                  <Link href="/contact">Contact Us</Link>
                 </Button>
               </div>
             </div>
 
-            <div className="relative aspect-square w-full rounded-lg overflow-hidden">
+            <div className="relative aspect-square rounded-lg overflow-hidden">
               <Image
                 src="https://images.pexels.com/photos/11429199/pexels-photo-11429199.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
                 alt="Construction team"

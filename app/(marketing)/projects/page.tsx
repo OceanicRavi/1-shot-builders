@@ -46,13 +46,14 @@ interface Project {
 export default function ProjectsPage() {
   const [activeTab, setActiveTab] = useState("all");
   const [activeStatus, setActiveStatus] = useState("all");
+  const [activeLocation, setActiveLocation] = useState("Auckland");
   const [projects, setProjects] = useState<Project[]>([]);
   const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  const filterProjects = (category: string, status: string) => {
+  const filterProjects = (category: string, status: string, location: string) => {
     let filtered = [...projects];
 
     if (category !== "all") {
@@ -63,6 +64,9 @@ export default function ProjectsPage() {
       filtered = filtered.filter(project => project.status === status);
     }
 
+    // Always filter by location since there's no "all" option
+    filtered = filtered.filter(project => project.location === location);
+
     // Sort: highlighted projects come first
     filtered.sort((a, b) => Number(b.highlighted) - Number(a.highlighted));
 
@@ -71,12 +75,17 @@ export default function ProjectsPage() {
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
-    filterProjects(value, activeStatus);
+    filterProjects(value, activeStatus, activeLocation);
   };
 
   const handleStatusChange = (value: string) => {
     setActiveStatus(value);
-    filterProjects(activeTab, value);
+    filterProjects(activeTab, value, activeLocation);
+  };
+
+  const handleLocationChange = (value: string) => {
+    setActiveLocation(value);
+    filterProjects(activeTab, activeStatus, value);
   };
 
   async function loadProjects() {
@@ -93,9 +102,6 @@ export default function ProjectsPage() {
       }
 
       setProjects(data || []);
-      //setFilteredProjects(data || []);
-      //filterProjects(activeTab, activeStatus);
-
 
     } catch (error: any) {
       console.error("[loadProjects] Caught error:", JSON.stringify({
@@ -123,9 +129,8 @@ export default function ProjectsPage() {
 
   // Filter projects when projects data or filters change
   useEffect(() => {
-    filterProjects(activeTab, activeStatus);
-  }, [projects, activeTab, activeStatus]);
-
+    filterProjects(activeTab, activeStatus, activeLocation);
+  }, [projects, activeTab, activeStatus, activeLocation]);
 
   if (loading) {
     return (
@@ -134,6 +139,7 @@ export default function ProjectsPage() {
       </div>
     );
   }
+
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
@@ -163,6 +169,16 @@ export default function ProjectsPage() {
 
       <section className="py-20">
         <div className="container">
+          {/* Location Filter */}
+          <div className="flex justify-center mb-8">
+            <Tabs defaultValue="Auckland" onValueChange={handleLocationChange} className="w-full max-w-md">
+              <TabsList className="grid grid-cols-2 h-auto p-1">
+                <TabsTrigger value="Auckland" className="py-2 px-4">Auckland</TabsTrigger>
+                <TabsTrigger value="Wellington" className="py-2 px-4">Wellington</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+
           <Tabs defaultValue="all" onValueChange={handleTabChange} className="w-full">
             <div className="flex justify-center mb-8">
               <TabsList className="grid grid-cols-3 h-auto p-1">
@@ -183,39 +199,81 @@ export default function ProjectsPage() {
             </div>
 
             <TabsContent value="all" className="mt-0">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {filteredProjects.map((project) => (
-                  <ProjectCard
-                    key={project.id}
-                    project={project}
-                    onViewDetails={() => setSelectedProject(project)}
-                  />
-                ))}
-              </div>
+              {filteredProjects.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-16 px-4">
+                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 rounded-lg p-8 text-center max-w-md mx-auto border border-blue-200 dark:border-blue-800">
+                    <div className="text-4xl mb-4">🚧</div>
+                    <h3 className="text-xl font-semibold text-blue-900 dark:text-blue-100 mb-2">
+                      Coming Soon!
+                    </h3>
+                    <p className="text-blue-700 dark:text-blue-300">
+                      We're working on exciting new projects in this area. Check back soon for updates!
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {filteredProjects.map((project) => (
+                    <ProjectCard
+                      key={project.id}
+                      project={project}
+                      onViewDetails={() => setSelectedProject(project)}
+                    />
+                  ))}
+                </div>
+              )}
             </TabsContent>
 
             <TabsContent value="renovations" className="mt-0">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {filteredProjects.map((project) => (
-                  <ProjectCard
-                    key={project.id}
-                    project={project}
-                    onViewDetails={() => setSelectedProject(project)}
-                  />
-                ))}
-              </div>
+              {filteredProjects.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-16 px-4">
+                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 rounded-lg p-8 text-center max-w-md mx-auto border border-blue-200 dark:border-blue-800">
+                    <div className="text-4xl mb-4">🚧</div>
+                    <h3 className="text-xl font-semibold text-blue-900 dark:text-blue-100 mb-2">
+                      Coming Soon!
+                    </h3>
+                    <p className="text-blue-700 dark:text-blue-300">
+                      We're working on exciting new projects in this area. Check back soon for updates!
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {filteredProjects.map((project) => (
+                    <ProjectCard
+                      key={project.id}
+                      project={project}
+                      onViewDetails={() => setSelectedProject(project)}
+                    />
+                  ))}
+                </div>
+              )}
             </TabsContent>
 
             <TabsContent value="new-builds" className="mt-0">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {filteredProjects.map((project) => (
-                  <ProjectCard
-                    key={project.id}
-                    project={project}
-                    onViewDetails={() => setSelectedProject(project)}
-                  />
-                ))}
-              </div>
+              {filteredProjects.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-16 px-4">
+                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 rounded-lg p-8 text-center max-w-md mx-auto border border-blue-200 dark:border-blue-800">
+                    <div className="text-4xl mb-4">🚧</div>
+                    <h3 className="text-xl font-semibold text-blue-900 dark:text-blue-100 mb-2">
+                      Coming Soon!
+                    </h3>
+                    <p className="text-blue-700 dark:text-blue-300">
+                      We're working on exciting new projects in this area. Check back soon for updates!
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {filteredProjects.map((project) => (
+                    <ProjectCard
+                      key={project.id}
+                      project={project}
+                      onViewDetails={() => setSelectedProject(project)}
+                    />
+                  ))}
+                </div>
+              )}
             </TabsContent>
           </Tabs>
         </div>

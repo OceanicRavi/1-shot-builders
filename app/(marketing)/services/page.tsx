@@ -266,7 +266,7 @@ export default function ServicesPage() {
                   {
                     title: "Bathroom Renovations",
                     description: "Create a spa-like retreat with luxury fixtures, custom tilework, and efficient layouts that maximize your space.",
-                    image: "https://images.pexels.com/photos/6585598/pexels-photo-6585598.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+                    image: "https://images.pexels.com/photos/8143696/pexels-photo-8143696.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
                   },
                   {
                     title: "Home Extensions",
@@ -286,7 +286,7 @@ export default function ServicesPage() {
                   {
                     title: "Commercial Renovations",
                     description: "Update your business space to improve functionality, reflect your brand, and create a better experience for customers and employees.",
-                    image: "https://images.pexels.com/photos/3759089/pexels-photo-3759089.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+                    image: "https://images.pexels.com/photos/10846887/pexels-photo-10846887.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
                   }
                 ].map((service, index) => (
                   <Card key={index} className="overflow-hidden">
@@ -338,7 +338,7 @@ export default function ServicesPage() {
                   {
                     title: "Multi-Family Residences",
                     description: "Quality apartment buildings and townhomes designed for community living with shared amenities and private spaces.",
-                    image: "https://images.pexels.com/photos/323705/pexels-photo-323705.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+                    image: "https://images.pexels.com/photos/11593506/pexels-photo-11593506.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
                   },
                   {
                     title: "Luxury Estates",
