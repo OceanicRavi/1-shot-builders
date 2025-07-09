@@ -7,8 +7,8 @@ export function SiteFooter() {
   return (
     <footer className="bg-muted py-12 mt-auto border-t">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="md:col-span-1">
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-8">
+          <div className="md:col-span-2">
             <h3 className="font-bold text-xl mb-4">1ShotBuilders</h3>
             <p className="text-muted-foreground mb-4">
               Transforming spaces, delivering dreams in one shot.
@@ -72,7 +72,7 @@ export function SiteFooter() {
           <div>
             <h4 className="font-semibold mb-4">Services</h4>
             <ul className="space-y-2">
-              
+
               <li>
                 <Link href="/services#renovation" className="text-muted-foreground hover:text-primary">
                   Renovation
@@ -86,26 +86,45 @@ export function SiteFooter() {
             </ul>
           </div>
 
-          <div>
+          <div className="md:col-span-2">
             <h4 className="font-semibold mb-4">Contact Us</h4>
-            <address className="not-italic text-muted-foreground">
-              <p>20 Keats Place</p>
-              <p>Blockhouse Bay</p>
-              <p>Auckland, New Zealand</p>
-              <div className="mt-2">
+            <ul>
+              <li>
+                <address className="not-italic text-muted-foreground">
+                  <p><b>Auckland branch</b></p>
+                  <p>20 Keats Place, Blockhouse Bay 0600.</p>
+                  <div className="mt-2">
                     <div className="text-muted-foreground">
                       Contact <b>Mayur</b> on <a href="tel:+64220429642" className="hover:text-primary">(+64) 022-042-9642</a>
                     </div>
                     <div className="text-muted-foreground">
                       Contact <b>Prashant</b> on <a href="tel:+64277771483" className="hover:text-primary">(+64) 027-777-1483</a>
                     </div>
-              </div>
-              <p>
-                <a href="mailto:we@1shotbuilders.co.nz" className="hover:text-primary">
-                  we@1shotbuilders.co.nz
-                </a>
-              </p>
-            </address>
+                  </div>
+                  <p>
+                    <a href="mailto:we@1shotbuilders.co.nz" className="hover:text-primary">
+                      we@1shotbuilders.co.nz
+                    </a>
+                  </p>
+                </address>
+              </li>
+              <li>
+                <address className="not-italic text-muted-foreground mt-4 ">
+                  <p><b>Wellington branch</b></p>
+                  <p>56 Waiuta, St Tītahi Bay, Porirua 5022.</p>
+                  <div className="mt-2">
+                    <div className="text-muted-foreground">
+                      Contact <b>Sunil Desai</b> on <a href="tel:+640211061122" className="hover:text-primary">(+64) 021-106-1122</a>
+                    </div>
+                  </div>
+                  <p>
+                    <a href="mailto:we@1shotbuilders.co.nz" className="hover:text-primary">
+                      we.wellington@1shotbuilders.co.nz
+                    </a>
+                  </p>
+                </address>
+              </li>
+            </ul>
           </div>
         </div>
 
