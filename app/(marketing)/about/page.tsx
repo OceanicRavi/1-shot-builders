@@ -13,21 +13,20 @@ export default function AboutPage() {
       name: "Mayur Kakadiya",
       role: "Founder & CEO",
       image: "/images/personal/mayur.JPG",
-      bio: "A passionate newcomer to the construction industry, Mayur combines fresh ideas with a strong entrepreneurial spirit to lead 1ShotBuilders."
+      bio: "With years of hands-on building experience, he takes pride in doing the job right the first time. He is known for his practical approach on site, attention to detail, and genuine commitment to ensuring every client is happy with the final result."
     },
     {
       name: "Prashant Dholakiya",
       role: "Founder",
       image: "/images/personal/prashant.JPG",
-      bio: "Prashant brings a hands-on approach and a drive for quality, stepping confidently into the construction space with a vision for growth."
+      bio: "A LBP focusing on keeping projects running smoothly and to a high standard. Easy to work with, communicates clearly, and always looks for ways to improve without cutting corners."
     }
   ];
 
   const certifications = [
-    "Licensed Building Practitioners",
-    "Registered Master Builders",
-    "Site Safe Certified",
-    "Construction Health and Safety NZ Accredited"
+    { name: "Licensed Building Practitioners", image: "/images/logos/lbp.jpg" },
+    { name: "Registered Master Builders", image: "/images/logos/mb.png" },
+    { name: "Site Safe Certified", image: "/images/logos/ss.png" }
   ];
 
   return (
@@ -64,7 +63,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="relative aspect-square rounded-lg overflow-hidden">
               <Image
-                src="https://images.pexels.com/photos/3990359/pexels-photo-3990359.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+                src="/images/brand/our_story.jpeg"
                 alt="Our story"
                 fill
                 className="object-cover"
@@ -73,18 +72,16 @@ export default function AboutPage() {
             <div>
               <h2 className="text-3xl font-bold tracking-tight mb-6">Our Story</h2>
               <p className="text-muted-foreground mb-4">
-                Founded in 2021 by Mayurkumar Kakadiya and Prashant Dholakiya, 1ShotBuilders emerged from a shared vision to redefine the construction and renovation landscape in Auckland. With a commitment to precision, quality, and client satisfaction, the duo established 1 SHOT CONSTRUCTION LIMITED, operating under the trading name Ariki Homes.
+                Founded in 2021 by Mayurkumar Kakadiya and Prashant Dholakiya, 1ShotBuilders was born out of a shared passion to transform the construction and renovation industry in Auckland. Mayur's expertise and experience in Business and the industry, and Prashant's experience as an LBP with hands-on experience, to create a company that puts quality, precision, and client satisfaction at the heart of every project.
               </p>
               <p className="text-muted-foreground mb-4">
-                Mayur and Prashant, both Licensed Building Practitioners, brought together their expertise and passion for building to create a company that prioritizes excellence in every project. Their hands-on approach and dedication to craftsmanship have been instrumental in delivering projects that not only meet but exceed client expectations.
+                1ShotBuilders has quickly built a reputation for delivering outstanding results — whether it’s a modern residential renovation or a complex commercial build. What sets us apart is our commitment to doing things right the first time. Our name, 1ShotBuilders, reflects this philosophy: we believe in getting every detail right from the start, ensuring smooth, stress-free project delivery.
               </p>
               <p className="text-muted-foreground mb-4">
-                Operating from their base in Blockhouse Bay, Auckland, 1ShotBuilders has quickly gained a reputation for transforming visions into reality. Their portfolio showcases a range of successful projects, from modern residential renovations to complex commercial builds, all executed with meticulous attention to detail.
-
-                The name "1ShotBuilders" encapsulates their philosophy: to get it right the first time. This ethos drives their team to deliver seamless experiences, ensuring that each project is completed with the utmost professionalism and integrity.
+                With a client-focused approach and a dedication to craftsmanship, Mayur and Prashant lead a team that prides itself on transparency, integrity, and excellence. Every project is treated with care, attention to detail, and the professionalism you deserve.
               </p>
               <p className="text-muted-foreground">
-                As they continue to grow, Mayur and Prashant remain committed to their founding principles, striving to set new standards in the construction industry and build lasting relationships with their clients.
+                As we grow, our commitment remains the same — to exceed expectations, set new standards, and build lasting relationships with the people and communities we serve.
               </p>
             </div>
           </div>
@@ -106,7 +103,7 @@ export default function AboutPage() {
               </CardHeader>
               <CardContent className="text-center">
                 <p className="text-muted-foreground">
-                  To be New Zealand's premier construction and renovation company, known for transforming spaces with uncompromising quality, innovative designs, and exceptional client experiences.
+                  To become the most trusted and reliable construction company, known for doing the job once and doing it right.
                 </p>
               </CardContent>
             </Card>
@@ -117,7 +114,7 @@ export default function AboutPage() {
               </CardHeader>
               <CardContent className="text-center">
                 <p className="text-muted-foreground">
-                  To deliver construction and renovation projects that exceed expectations through expert craftsmanship, transparent communication, and a relentless commitment to getting it right the first time.
+                  To lead with precision, build with purpose, and deliver with pride. We don’t cut corners — we create legacies.
                 </p>
               </CardContent>
             </Card>
@@ -132,7 +129,7 @@ export default function AboutPage() {
                 </CardHeader>
                 <CardContent className="text-center">
                   <p className="text-muted-foreground">
-                    We never compromise on quality, using only the finest materials and techniques to ensure lasting results.
+                    We build it once — and we build it right. From premium materials to masterful execution, quality is in every nail, beam, and finish.
                   </p>
                 </CardContent>
               </Card>
@@ -144,7 +141,7 @@ export default function AboutPage() {
                 </CardHeader>
                 <CardContent className="text-center">
                   <p className="text-muted-foreground">
-                    We operate with honesty and transparency in all our dealings, building trust with every interaction.
+                    We don’t just build structures — we build trust. Through clear communication and honest work, our word is as solid as our foundations.
                   </p>
                 </CardContent>
               </Card>
@@ -156,7 +153,7 @@ export default function AboutPage() {
                 </CardHeader>
                 <CardContent className="text-center">
                   <p className="text-muted-foreground">
-                    We embrace new technologies and approaches to deliver efficient, cutting-edge solutions.
+                    We stay ahead by building smarter. With cutting-edge tools and forward-thinking methods, we deliver solutions that stand the test of time.
                   </p>
                 </CardContent>
               </Card>
@@ -209,12 +206,18 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {certifications.map((cert, index) => (
               <Card key={index} className="text-center">
                 <CardHeader>
-                  <Award className="h-8 w-8 text-primary mx-auto mb-2" />
-                  <CardTitle className="text-lg">{cert}</CardTitle>
+                  <div className="h-8 w-8 mx-auto mb-2 flex items-center justify-center">
+                    <img
+                      src={cert.image}
+                      alt={`${cert.name} certification`}
+                      className="h-20 w-20 object-contain"
+                    />
+                  </div>
+                  <CardTitle className="text-lg">{cert.name}</CardTitle>
                 </CardHeader>
               </Card>
             ))}
@@ -233,6 +236,13 @@ export default function AboutPage() {
               </p>
 
               <ul className="space-y-4">
+                <li className="flex items-start">
+                  <CheckCircle2 className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <span className="font-semibold">Registered Master Builder and Licensed Building Practitioner (LBP)</span>
+                    <p className="text-muted-foreground">We are proud to be a Registered Master Builder and Licensed Building Practitioner (LBP), ensuring the highest standards of quality, compliance, and professionalism in every project.</p>
+                  </div>
+                </li>
                 <li className="flex items-start">
                   <CheckCircle2 className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
                   <div>
@@ -266,6 +276,13 @@ export default function AboutPage() {
                   <div>
                     <span className="font-semibold">Transparent Process</span>
                     <p className="text-muted-foreground">Clear communication and no surprises from start to finish.</p>
+                  </div>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle2 className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <span className="font-semibold">Insured and Covered</span>
+                    <p className="text-muted-foreground">Backed by Professional Indemnity and Public Liability Insurance for your peace of mind.</p>
                   </div>
                 </li>
               </ul>
