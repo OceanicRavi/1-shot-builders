@@ -100,44 +100,38 @@
   @apply backdrop-blur-md bg-white/90 dark:bg-gray-900/90;
 }
 
-/* Solution 1: Add to your global CSS */
-/* Force immediate touch response on iOS */
-.btn-orange, 
-button, 
-[role="button"],
-a[role="button"] {
-  /* Remove 300ms delay */
-  touch-action: manipulation;
-  
-  /* Ensure element is treated as interactive */
-  cursor: pointer;
-  
-  /* Remove iOS tap highlight delay */
+/* Add this to your globals.css file */
+
+/* Emergency iOS Safari fix */
+* {
   -webkit-tap-highlight-color: transparent;
-  
-  /* Force hardware acceleration */
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-  
-  /* Ensure proper touch target size */
-  min-height: 44px;
-  min-width: 44px;
-  
-  /* Remove any conflicting user-select */
+  -webkit-touch-callout: none;
   -webkit-user-select: none;
+  -khtml-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
 }
 
-/* Specific fix for buttons inside links */
-.btn-orange > * {
-  pointer-events: none;
+/* Re-enable text selection for inputs and content */
+input, textarea, [contenteditable] {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
 }
 
-/* Alternative: Use this class on problematic buttons */
-.ios-touch-fix {
+/* Force immediate touch response */
+button, a, [role="button"] {
   touch-action: manipulation !important;
   -webkit-tap-highlight-color: rgba(0,0,0,0.1) !important;
-  transform: translate3d(0,0,0) !important;
+}
+
+/* Specific fix for your buttons */
+.btn-orange {
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: rgba(0,0,0,0.1) !important;
+  transform: translateZ(0) !important;
+  -webkit-transform: translateZ(0) !important;
+  cursor: pointer !important;
 }
