@@ -116,28 +116,20 @@ export default function Home() {
               Transforming spaces with precision craftsmanship, innovative designs, and exceptional service.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <a
+              <Link
                 href="/contact"
                 className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 btn-orange"
-                style={{ touchAction: 'manipulation', minHeight: '44px', minWidth: '44px', cursor: 'pointer' }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  window.location.href = '/contact';
-                }}
+                style={{ touchAction: 'manipulation', minHeight: '44px', minWidth: '44px', cursor: 'pointer', position: 'relative', zIndex: 10 }}
               >
                 Get a Quote
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/projects"
                 className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 btn-orange"
-                style={{ touchAction: 'manipulation', minHeight: '44px', minWidth: '44px', cursor: 'pointer' }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  window.location.href = '/projects';
-                }}
+                style={{ touchAction: 'manipulation', minHeight: '44px', minWidth: '44px', cursor: 'pointer', position: 'relative', zIndex: 10 }}
               >
                 View Our Projects
-              </a>
+              </Link>
             </div>
           </div>
         </div>
