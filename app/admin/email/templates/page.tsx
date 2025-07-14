@@ -6,19 +6,46 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Plus, Edit, Trash2, Eye } from "lucide-react";
+import { Loader2, Plus, Edit, Trash2, Eye, Copy, X } from "lucide-react";
 import { db } from "@/lib/services/database";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface EmailTemplate {
   id: string;
   name: string;
   subject: string;
   body_html: string;
+  custom_variables: string[];
+  category: string;
   created_at: string;
   updated_at: string;
 }
+
+const TEMPLATE_CATEGORIES = [
+  'Welcome',
+  'Newsletter', 
+  'Promotion',
+  'Notification',
+  'Follow-up',
+  'Survey',
+  'Other'
+];
+
+const COMMON_VARIABLES = [
+  'name',
+  'email', 
+  'first_name',
+  'last_name',
+  'company',
+  'phone',
+  'date',
+  'time',
+  'unsubscribe_url'
+];
 
 export default function EmailTemplatesPage() {
   const [templates, setTemplates] = useState<EmailTemplate[]>([]);
@@ -34,6 +61,12 @@ export default function EmailTemplatesPage() {
   const [name, setName] = useState("");
   const [subject, setSubject] = useState("");
   const [bodyHtml, setBodyHtml] = useState("");
+  const [category, setCategory] = useState("all");
+  const [customVariables, setCustomVariables] = useState<string[]>([]);
+  const [newVariable, setNewVariable] = useState("");
+  
+  // Preview data
+  const [previewData, setPreviewData] = useState<Record<string, string>>({});
 
   const { toast } = useToast();
 
@@ -61,6 +94,9 @@ export default function EmailTemplatesPage() {
     setName("");
     setSubject("");
     setBodyHtml("");
+    setCategory("");
+    setCustomVariables([]);
+    setNewVariable("");
     setEditingTemplate(null);
   };
 
@@ -79,12 +115,108 @@ export default function EmailTemplatesPage() {
     setName(template.name);
     setSubject(template.subject);
     setBodyHtml(template.body_html);
+    setCategory(template.category || "all");
+    setCustomVariables(template.custom_variables || []);
     setShowForm(true);
+  };
+
+  const addCustomVariable = () => {
+    if (newVariable.trim() && !customVariables.includes(newVariable.trim())) {
+      setCustomVariables([...customVariables, newVariable.trim()]);
+      setNewVariable("");
+    }
+  };
+
+  const removeCustomVariable = (variable: string) => {
+    setCustomVariables(customVariables.filter(v => v !== variable));
+  };
+
+  const insertVariable = (variable: string) => {
+    const textarea = document.getElementById('bodyHtml') as HTMLTextAreaElement;
+    if (textarea) {
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const text = textarea.value;
+      const before = text.substring(0, start);
+      const after = text.substring(end, text.length);
+      const newText = before + `{{${variable}}}` + after;
+      setBodyHtml(newText);
+      
+      // Focus back to textarea
+      setTimeout(() => {
+        textarea.focus();
+        textarea.setSelectionRange(start + variable.length + 4, start + variable.length + 4);
+      }, 0);
+    }
+  };
+
+  const generatePreviewHtml = (html: string, variables: string[]) => {
+    let previewHtml = html;
+    
+    // Replace variables with preview data or placeholder
+    [...COMMON_VARIABLES, ...variables].forEach(variable => {
+      const value = previewData[variable] || `[${variable}]`;
+      const regex = new RegExp(`\\{\\{${variable}\\}\\}`, 'g');
+      previewHtml = previewHtml.replace(regex, value);
+    });
+
+    return previewHtml;
   };
 
   const previewTemplateHandler = (template: EmailTemplate) => {
     setPreviewTemplate(template);
+    // Initialize preview data with sample values
+    const sampleData: Record<string, string> = {
+      name: 'John Doe',
+      email: 'john@example.com',
+      first_name: 'John',
+      last_name: 'Doe',
+      company: 'Example Corp',
+      phone: '+1 234 567 8900',
+      date: new Date().toLocaleDateString(),
+      time: new Date().toLocaleTimeString(),
+      unsubscribe_url: '#unsubscribe'
+    };
+    
+    // Add custom variables with sample data
+    template.custom_variables?.forEach(variable => {
+      sampleData[variable] = `Sample ${variable}`;
+    });
+    
+    setPreviewData(sampleData);
     setShowPreview(true);
+  };
+
+  const duplicateTemplate = async (template: EmailTemplate) => {
+    try {
+      const { data: { session } } = await db.auth.getSession();
+      if (!session?.user) throw new Error("Not authenticated");
+
+      const templateData = {
+        name: `${template.name} (Copy)`,
+        subject: template.subject,
+        body_html: template.body_html,
+        custom_variables: template.custom_variables,
+        category: template.category,
+        created_by: session.user.id,
+      };
+
+      const { error } = await db.emailTemplates.create(templateData);
+      if (error) throw error;
+
+      toast({
+        title: "Template duplicated",
+        description: "Template has been duplicated successfully",
+      });
+
+      loadTemplates();
+    } catch (error: any) {
+      toast({
+        title: "Duplication failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -109,6 +241,8 @@ export default function EmailTemplatesPage() {
         name,
         subject,
         body_html: bodyHtml,
+        custom_variables: customVariables,
+        category,
         created_by: session.user.id,
         updated_at: new Date().toISOString(),
       };
@@ -194,17 +328,23 @@ export default function EmailTemplatesPage() {
       <div class="logo">1ShotBuilders</div>
     </div>
     <div class="content">
-      <h1>Your Email Title Here</h1>
-      <p>Your email content goes here...</p>
-      <a href="#" class="button">Call to Action</a>
+      <h1>Hello {{name}}!</h1>
+      <p>Thank you for your interest in our services.</p>
+      <a href="#" class="button">Get Started</a>
     </div>
     <div class="footer">
       <p>1ShotBuilders | 20 Keats Place, Blockhouse Bay, Auckland, New Zealand</p>
       <p>Email: we@1shotbuilders.co.nz | Phone: (+64) 022-042-9642</p>
+      <p><a href="{{unsubscribe_url}}">Unsubscribe</a></p>
     </div>
   </div>
 </body>
 </html>`;
+
+// Update your filtering logic to handle "all"
+const filteredTemplates = category === "all" 
+  ? templates 
+  : templates.filter(template => template.category === category);
 
   if (loading) {
     return (
@@ -224,12 +364,54 @@ export default function EmailTemplatesPage() {
         </Button>
       </div>
 
+      {/* Category Filter */}
+      <div className="flex gap-4 items-center">
+        <Label>Filter by category:</Label>
+        <Select value={category} onValueChange={setCategory}>
+          <SelectTrigger className="w-48">
+            <SelectValue placeholder="All categories" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All categories</SelectItem>
+            {TEMPLATE_CATEGORIES.map(cat => (
+              <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {templates.map((template) => (
-          <Card key={template.id}>
+        {filteredTemplates.map((template) => (
+          <Card key={template.id} className="relative">
             <CardHeader>
-              <CardTitle className="text-lg">{template.name}</CardTitle>
-              <p className="text-sm text-muted-foreground">{template.subject}</p>
+              <div className="flex justify-between items-start">
+                <div>
+                  <CardTitle className="text-lg">{template.name}</CardTitle>
+                  <p className="text-sm text-muted-foreground">{template.subject}</p>
+                </div>
+                {template.category && (
+                  <Badge variant="outline">{template.category}</Badge>
+                )}
+              </div>
+              
+              {/* Custom Variables */}
+              {template.custom_variables && template.custom_variables.length > 0 && (
+                <div className="mt-2">
+                  <p className="text-xs text-muted-foreground mb-1">Variables:</p>
+                  <div className="flex flex-wrap gap-1">
+                    {template.custom_variables.slice(0, 3).map((variable, index) => (
+                      <Badge key={index} variant="secondary" className="text-xs">
+                        {variable}
+                      </Badge>
+                    ))}
+                    {template.custom_variables.length > 3 && (
+                      <Badge variant="secondary" className="text-xs">
+                        +{template.custom_variables.length - 3} more
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              )}
             </CardHeader>
             <CardContent>
               <div className="flex gap-2">
@@ -245,11 +427,17 @@ export default function EmailTemplatesPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => editTemplate(template)}
-                  className="flex-1"
+                  onClick={() => duplicateTemplate(template)}
+                  title="Duplicate template"
                 >
-                  <Edit className="h-4 w-4 mr-1" />
-                  Edit
+                  <Copy className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => editTemplate(template)}
+                >
+                  <Edit className="h-4 w-4" />
                 </Button>
                 <Button
                   variant="destructive"
@@ -269,10 +457,12 @@ export default function EmailTemplatesPage() {
         ))}
       </div>
 
-      {templates.length === 0 && (
+      {filteredTemplates.length === 0 && (
         <Card className="text-center py-12">
           <CardContent>
-            <p className="text-muted-foreground mb-4">No email templates found</p>
+            <p className="text-muted-foreground mb-4">
+              {category ? `No templates found in "${category}" category` : "No email templates found"}
+            </p>
             <Button onClick={openForm}>
               <Plus className="h-4 w-4 mr-2" />
               Create Your First Template
@@ -283,80 +473,214 @@ export default function EmailTemplatesPage() {
 
       {/* Form Dialog */}
       <Dialog open={showForm} onOpenChange={setShowForm}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {editingTemplate ? "Edit Template" : "Create New Template"}
             </DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="name">Template Name *</Label>
-                <Input
-                  id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Welcome Email"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="subject">Email Subject *</Label>
-                <Input
-                  id="subject"
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  placeholder="Welcome to 1ShotBuilders"
-                />
-              </div>
-            </div>
+          
+          <Tabs defaultValue="content" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="content">Content</TabsTrigger>
+              <TabsTrigger value="variables">Variables</TabsTrigger>
+              <TabsTrigger value="settings">Settings</TabsTrigger>
+            </TabsList>
 
-            <div className="space-y-2">
-              <Label htmlFor="bodyHtml">HTML Content *</Label>
-              <Textarea
-                id="bodyHtml"
-                value={bodyHtml}
-                onChange={(e) => setBodyHtml(e.target.value)}
-                placeholder={defaultTemplate}
-                className="min-h-[400px] font-mono text-sm"
-              />
-              <p className="text-sm text-muted-foreground">
-                Use HTML to create your email template. Include variables like {`{{name}}`} for personalization.
-              </p>
-            </div>
+            <form onSubmit={handleSubmit}>
+              <TabsContent value="content" className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Template Name *</Label>
+                    <Input
+                      id="name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Welcome Email"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="subject">Email Subject *</Label>
+                    <Input
+                      id="subject"
+                      value={subject}
+                      onChange={(e) => setSubject(e.target.value)}
+                      placeholder="Welcome to 1ShotBuilders, {{name}}!"
+                    />
+                  </div>
+                </div>
 
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={closeForm}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={submitting}>
-                {submitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {editingTemplate ? "Updating..." : "Creating..."}
-                  </>
-                ) : (
-                  editingTemplate ? "Update Template" : "Create Template"
-                )}
-              </Button>
-            </DialogFooter>
-          </form>
+                <div className="space-y-2">
+                  <Label htmlFor="bodyHtml">HTML Content *</Label>
+                  <Textarea
+                    id="bodyHtml"
+                    value={bodyHtml}
+                    onChange={(e) => setBodyHtml(e.target.value)}
+                    placeholder={defaultTemplate}
+                    className="min-h-[400px] font-mono text-sm"
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Use HTML to create your email template. Use {`{{variable_name}}`} for dynamic content.
+                  </p>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="variables" className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-medium mb-4">Available Variables</h3>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-sm font-medium">Common Variables</Label>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {COMMON_VARIABLES.map((variable) => (
+                          <Button
+                            key={variable}
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => insertVariable(variable)}
+                            className="text-xs"
+                          >
+                            {`{{${variable}}}`}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-sm font-medium">Custom Variables</Label>
+                      <div className="flex gap-2 mt-2">
+                        <Input
+                          value={newVariable}
+                          onChange={(e) => setNewVariable(e.target.value)}
+                          placeholder="variable_name"
+                          onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomVariable())}
+                        />
+                        <Button type="button" onClick={addCustomVariable} size="sm">
+                          Add
+                        </Button>
+                      </div>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {customVariables.map((variable, index) => (
+                          <div key={index} className="flex items-center gap-1">
+                            <Button
+                              type="button"
+                              variant="secondary"
+                              size="sm"
+                              onClick={() => insertVariable(variable)}
+                              className="text-xs"
+                            >
+                              {`{{${variable}}}`}
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeCustomVariable(variable)}
+                              className="h-6 w-6 p-0"
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="settings" className="space-y-6">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="category">Category</Label>
+                    <Select value={category} onValueChange={setCategory}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {TEMPLATE_CATEGORIES.map((cat) => (
+                          <SelectItem key={cat} value={cat}>
+                            {cat}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Template Information</Label>
+                    <div className="p-4 bg-muted rounded-lg text-sm space-y-2">
+                      <p><strong>Variables:</strong> {[...COMMON_VARIABLES, ...customVariables].length} available</p>
+                      <p><strong>Category:</strong> {category || "Uncategorized"}</p>
+                    </div>
+                  </div>
+                </div>
+              </TabsContent>
+
+              <DialogFooter className="mt-6">
+                <Button type="button" variant="outline" onClick={closeForm}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={submitting}>
+                  {submitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {editingTemplate ? "Updating..." : "Creating..."}
+                    </>
+                  ) : (
+                    editingTemplate ? "Update Template" : "Create Template"
+                  )}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Tabs>
         </DialogContent>
       </Dialog>
 
       {/* Preview Dialog */}
       <Dialog open={showPreview} onOpenChange={setShowPreview}>
-        <DialogContent className="max-w-4xl max-h-[90vh]">
+        <DialogContent className="max-w-6xl max-h-[90vh]">
           <DialogHeader>
             <DialogTitle>Preview: {previewTemplate?.name}</DialogTitle>
           </DialogHeader>
-          <div className="border rounded-lg overflow-hidden">
-            <iframe
-              srcDoc={previewTemplate?.body_html}
-              className="w-full h-[500px]"
-              title="Email Preview"
-            />
-          </div>
+          
+          <Tabs defaultValue="preview" className="w-full">
+            <TabsList>
+              <TabsTrigger value="preview">Preview</TabsTrigger>
+              <TabsTrigger value="data">Sample Data</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="preview">
+              <div className="border rounded-lg overflow-hidden">
+                <iframe
+                  srcDoc={previewTemplate ? generatePreviewHtml(previewTemplate.body_html, previewTemplate.custom_variables || []) : ''}
+                  className="w-full h-[500px]"
+                  title="Email Preview"
+                />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="data">
+              <div className="space-y-4">
+                <Label>Edit preview data to see how variables will be replaced:</Label>
+                <div className="grid grid-cols-2 gap-4 max-h-[400px] overflow-y-auto">
+                  {Object.entries(previewData).map(([key, value]) => (
+                    <div key={key} className="space-y-2">
+                      <Label htmlFor={key} className="text-sm">{`{{${key}}}`}</Label>
+                      <Input
+                        id={key}
+                        value={value}
+                        onChange={(e) => setPreviewData({...previewData, [key]: e.target.value})}
+                        className="text-sm"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+
           <DialogFooter>
             <Button onClick={() => setShowPreview(false)}>Close</Button>
           </DialogFooter>

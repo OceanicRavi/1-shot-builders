@@ -370,8 +370,7 @@ export const db = {
         .from('campaigns')
         .select(`
           *,
-          template:email_templates(*),
-          campaign_recipients(*, recipient:recipients(*))
+          template:email_templates(*)
         `)
         .eq('id', id)
         .single();
@@ -405,6 +404,99 @@ export const db = {
         .eq('campaign_id', campaignId);
       return { data, error };
     }
-  }
-//
+  },
+
+  contacts: {
+    list: async () => {
+      const { data, count, error } = await supabase
+        .from('contacts')
+        .select('*', { count: 'exact' })
+        .order('type', { ascending: true })
+        .order('created_at', { ascending: false });
+      return { data, count, error };
+    },
+
+    listByType: async (type: 'recipient' | 'sender') => {
+      const { data, count, error } = await supabase
+        .from('contacts')
+        .select('*', { count: 'exact' })
+        .eq('type', type)
+        .order('created_at', { ascending: false });
+      return { data, count, error };
+    },
+
+    getById: async (id: string) => {
+      const { data, error } = await supabase
+        .from('contacts')
+        .select('*')
+        .eq('id', id)
+        .single();
+      return { data, error };
+    },
+
+    create: async (contact: any) => {
+      // If creating a default sender, first unset other defaults
+      if (contact.type === 'sender' && contact.is_default) {
+        await supabase
+          .from('contacts')
+          .update({ is_default: false })
+          .eq('type', 'sender')
+          .eq('created_by', contact.created_by);
+      }
+      
+      const { data, error } = await supabase
+        .from('contacts')
+        .insert(contact)
+        .select()
+        .single();
+      return { data, error };
+    },
+
+    update: async (id: string, updates: any) => {
+      // If setting as default sender, first unset other defaults
+      if (updates.type === 'sender' && updates.is_default) {
+        const { data: contact } = await supabase
+          .from('contacts')
+          .select('created_by')
+          .eq('id', id)
+          .single();
+        
+        if (contact) {
+          await supabase
+            .from('contacts')
+            .update({ is_default: false })
+            .eq('type', 'sender')
+            .eq('created_by', contact.created_by)
+            .neq('id', id);
+        }
+      }
+      
+      const { data, error } = await supabase
+        .from('contacts')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+      return { data, error };
+    },
+
+    delete: async (id: string) => {
+      const { error } = await supabase
+        .from('contacts')
+        .delete()
+        .eq('id', id);
+      return { error };
+    },
+
+    getDefaultSender: async () => {
+      const { data, error } = await supabase
+        .from('contacts')
+        .select('*')
+        .eq('type', 'sender')
+        .eq('is_default', true)
+        .single();
+      return { data, error };
+    },
+  },
+
 };

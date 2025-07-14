@@ -1,178 +1,160 @@
-import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
-import { sendCampaignEmail } from '@/lib/email/sendCampaignEmail';
+import { db } from '@/lib/services/database';
+import { EmailService } from '@/lib/email/emailService';
 
-// Use service role client for server-side operations
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY! // This bypasses RLS
-);
+export async function POST(request: NextRequest) {
+  try {
+    /*     const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.user) {
+          return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        } */
 
-export async function POST(req: NextRequest) {
-    try {
-        const { campaignId } = await req.json();
-        
-        if (!campaignId) {
-            return NextResponse.json(
-                { success: false, error: 'Campaign ID is required' },
-                { status: 400 }
-            );
-        }
+    const body = await request.json();
+    const { campaignId } = body;
 
-        // Get campaign details with template
-        const { data: campaign, error: campaignError } = await supabase
-            .from('campaigns')
-            .select('*')
-            .eq('id', campaignId)
-            .single();
-        
-        
-        if (campaignError || !campaign) {
-            return NextResponse.json(
-                { success: false, error: 'Campaign not found' },
-                { status: 404 }
-            );
-        }
+    if (!campaignId) {
+      return NextResponse.json(
+        { error: 'Campaign ID is required' },
+        { status: 400 }
+      );
+    }
 
-        if (campaign.status !== 'draft') {
-            return NextResponse.json(
-                { success: false, error: 'Campaign has already been sent' },
-                { status: 400 }
-            );
-        }
+    // Get campaign details with template
+    const { data: campaign, error: campaignError } = await db.campaigns.getById(campaignId);
+    if (campaignError || !campaign) {
+      return NextResponse.json(
+        { error: 'Campaign not found' },
+        { status: 404 }
+      );
+    }
 
-        // Update campaign status to sending
-        await supabase
-            .from('campaigns')
-            .update({ status: 'sending' })
-            .eq('id', campaignId);
+    if (campaign.status !== 'draft') {
+      return NextResponse.json(
+        { error: 'Campaign cannot be sent in current status' },
+        { status: 400 }
+      );
+    }
 
-        // Get recipients based on tags
-        let recipientsQuery = supabase.from('recipients').select('*');
+    if (!campaign.template) {
+      return NextResponse.json(
+        { error: 'Campaign template not found' },
+        { status: 400 }
+      );
+    }
 
-        if (campaign.recipient_tags && campaign.recipient_tags.length > 0) {
-            recipientsQuery = recipientsQuery.overlaps('tags', campaign.recipient_tags);
-        }
+    // Validate sender info
+    if (!campaign.from_email || !campaign.from_name) {
+      return NextResponse.json(
+        { error: 'From address not configured' },
+        { status: 400 }
+      );
+    }
 
-        const { data: recipients, error: recipientsError } = await recipientsQuery;
+    // Update campaign status to sending
+    await db.campaigns.update(campaignId, { status: 'sending' });
 
-        if (recipientsError) {
-            throw recipientsError;
-        }
+    // Get recipients based on tags
+    const { data: recipientsRaw, error: recipientsError } = await db.contacts.listByType('recipient');
+    if (recipientsError) {
+      throw new Error('Failed to fetch recipients');
+    }
+    let recipients = recipientsRaw || [];
 
-        if (!recipients || recipients.length === 0) {
-            await supabase
-                .from('campaigns')
-                .update({ status: 'failed' })
-                .eq('id', campaignId);
+    if (campaign.recipient_tags?.length > 0) {
+      recipients = recipients.filter(recipient =>
+        recipient.tags?.some((tag: any) => campaign.recipient_tags.includes(tag))
+      );
+    }
+    if (!recipients || recipients.length === 0) {
+      await db.campaigns.update(campaignId, { status: 'failed' });
 
-            return NextResponse.json(
-                { success: false, error: 'No recipients found for this campaign' },
-                { status: 400 }
-            );
-        }
+      return NextResponse.json(
+        { error: 'No recipients found for this campaign' },
+        { status: 400 }
+      );
+    }
 
-        // Create campaign recipient records
-        const campaignRecipients = recipients.map(recipient => ({
-            campaign_id: campaignId,
-            recipient_id: recipient.id,
-            email_sent: false,
-        }));
+    // Send emails to all recipients
+    let successCount = 0;
+    let failureCount = 0;
+    const errors: string[] = [];
 
-        const { data: createdRecipients, error: createError } = await supabase
-            .from('campaign_recipients')
-            .insert(campaignRecipients)
-            .select();
+    for (const recipient of recipients) {
+      try {
+        // Prepare recipient data
+        const recipientData = {
+          name: recipient.name,
+          email: recipient.email,
+          first_name: recipient.name.split(' ')[0],
+          last_name: recipient.name.split(' ').slice(1).join(' '),
+        };
 
-        if (createError) {
-            throw createError;
-        }
-
-        // Send emails
-        let successCount = 0;
-        let failureCount = 0;
-        const { data: template, error: templateError } = await supabase
-            .from('email_templates')
-            .select('*')
-            .eq('id', campaign.template_id)
-            .single();
-
-        for (let i = 0; i < recipients.length; i++) {
-            const recipient = recipients[i];
-            const campaignRecipient = createdRecipients[i];
-
-            try {
-                // Replace variables in template
-                let emailHtml = template.body_html;
-                let emailSubject = template.subject;
-
-                // Simple variable replacement
-                emailHtml = emailHtml.replace(/\{\{name\}\}/g, recipient.name);
-                emailHtml = emailHtml.replace(/\{\{email\}\}/g, recipient.email);
-                emailSubject = emailSubject.replace(/\{\{name\}\}/g, recipient.name);
-
-
-                const recipientEmail = recipient.email;
-                const subject = emailSubject;
-                const html = emailHtml;
-
-                const result = await sendCampaignEmail({ recipientEmail, subject, html });
-
-                // Update campaign recipient as sent
-                await supabase
-                    .from('campaign_recipients')
-                    .update({
-                        email_sent: true,
-                        sent_at: new Date().toISOString(),
-                    })
-                    .eq('id', campaignRecipient.id);
-
-                successCount++;
-            } catch (error: any) {
-                // Update campaign recipient with error
-                await supabase
-                    .from('campaign_recipients')
-                    .update({
-                        email_sent: false,
-                        error_message: error.message,
-                    })
-                    .eq('id', campaignRecipient.id);
-
-                failureCount++;
-            }
-        }
-
-        // Update campaign status
-        const finalStatus = failureCount === 0 ? 'sent' : (successCount === 0 ? 'failed' : 'sent');
-        await supabase
-            .from('campaigns')
-            .update({
-                status: finalStatus,
-                sent_at: new Date().toISOString(),
-            })
-            .eq('id', campaignId);
-
-        return NextResponse.json({
-            success: true,
-            message: `Campaign sent successfully. ${successCount} emails sent, ${failureCount} failed.`,
-            stats: { successCount, failureCount }
+        // Send email
+        const result = await EmailService.sendCampaignEmail({
+          recipientEmail: recipient.email,
+          recipientName: recipient.name,
+          recipientData,
+          subject: campaign.template.subject,
+          html: campaign.template.body_html,
+          fromEmail: campaign.from_email,
+          fromName: campaign.from_name,
+          campaignId
         });
 
-    } catch (error: any) {
-        console.error('Campaign send error:', error);
-
-        // Update campaign status to failed
-        if (req.body) {
-            const { campaignId } = await req.json();
-            await supabase
-                .from('campaigns')
-                .update({ status: 'failed' })
-                .eq('id', campaignId);
+        if (result.success) {
+          successCount++;
+        } else {
+          failureCount++;
+          errors.push(`${recipient.email}: ${result.error}`);
         }
 
-        return NextResponse.json(
-            { success: false, error: error.message },
-            { status: 500 }
-        );
+        // Small delay to avoid rate limiting
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+      } catch (error: any) {
+        failureCount++;
+        errors.push(`${recipient.email}: ${error.message}`);
+        console.error(`Failed to send to ${recipient.email}:`, error);
+      }
     }
+
+    // Update campaign status and statistics
+    const finalStatus = failureCount === 0 ? 'sent' : (successCount > 0 ? 'sent' : 'failed');
+
+     const { data: campupdate, error: camperr } = await db.campaigns.update(campaignId, {
+        status: finalStatus,
+        sent_at: new Date().toISOString()
+      });
+    const message = failureCount === 0
+      ? `Campaign sent successfully to ${successCount} recipients.`
+      : `Campaign partially sent. ${successCount} successful, ${failureCount} failed.`;
+
+    return NextResponse.json({
+      success: true,
+      message,
+      stats: {
+        total: recipients.length,
+        success: successCount,
+        failed: failureCount,
+        errors: errors.slice(0, 5) // Return first 5 errors
+      }
+    });
+
+  } catch (error: any) {
+    console.error('Campaign send error:', error);
+
+    // Update campaign status to failed
+    const { campaignId } = await request.json().catch(() => ({}));
+    if (campaignId) {
+    await db.campaigns.update(campaignId, {
+        status: 'failed',
+        sent_at: new Date().toISOString()
+      });
+    }
+
+    return NextResponse.json(
+      { error: error.message || 'Failed to send campaign' },
+      { status: 500 }
+    );
+  }
 }
