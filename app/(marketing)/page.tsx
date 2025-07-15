@@ -70,6 +70,12 @@ export default function Home() {
   const [testimonialsLoading, setTestimonialsLoading] = useState(true);
   const [testimonialsError, setTestimonialsError] = useState<string | null>(null);
 
+  const handleClick = (e: { preventDefault: () => void; stopPropagation: () => void; }, href: string) => {
+    e.preventDefault()
+    e.stopPropagation()
+    window.location.href = href
+  }
+
   useEffect(() => {
     const loadTestimonials = async () => {
       try {
@@ -120,6 +126,7 @@ export default function Home() {
                 href="/contact"
                 className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 btn-orange"
                 style={{ touchAction: 'manipulation', minHeight: '44px', minWidth: '44px', cursor: 'pointer', position: 'relative', zIndex: 10 }}
+                onClick={(e) => handleClick(e, '/contact')}
               >
                 Get a Quote
               </Link>
@@ -127,6 +134,7 @@ export default function Home() {
                 href="/projects"
                 className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 btn-orange"
                 style={{ touchAction: 'manipulation', minHeight: '44px', minWidth: '44px', cursor: 'pointer', position: 'relative', zIndex: 10 }}
+                onClick={(e) => handleClick(e, '/projects')}
               >
                 View Our Projects
               </Link>
@@ -223,12 +231,12 @@ export default function Home() {
             Let our expert team bring your vision to life with precision and excellence.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/projects" className="btn-orange [button-styling-classes]">
-              View Our Projects
-            </Link>
-            <Link href="/franchise/apply" className="btn-orange [button-styling-classes]">
-              Apply for Franchise
-            </Link>
+            <Button asChild size="lg" className="btn-orange">
+              <Link href="/projects">View Our Projects</Link>
+            </Button>
+            <Button asChild size="lg" className="btn-orange">
+              <Link href="/franchise/apply">Apply for Franchise</Link>
+            </Button>
           </div>
         </div>
       </section>
