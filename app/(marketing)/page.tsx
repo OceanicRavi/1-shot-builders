@@ -24,7 +24,6 @@ const services = [
   },
 ];
 
-
 const timelineSteps = [
   {
     number: "01",
@@ -65,16 +64,17 @@ interface Testimonial {
   };
   image: string;
 }
+
 export default function Home() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [testimonialsLoading, setTestimonialsLoading] = useState(true);
   const [testimonialsError, setTestimonialsError] = useState<string | null>(null);
 
   const handleClick = (e: { preventDefault: () => void; stopPropagation: () => void; }, href: string) => {
-    e.preventDefault()
-    e.stopPropagation()
-    window.location.href = href
-  }
+    e.preventDefault();
+    e.stopPropagation();
+    window.location.href = href;
+  };
 
   useEffect(() => {
     const loadTestimonials = async () => {
@@ -98,6 +98,7 @@ export default function Home() {
 
     loadTestimonials();
   }, []);
+
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
@@ -122,22 +123,42 @@ export default function Home() {
               Transforming spaces with precision craftsmanship, innovative designs, and exceptional service.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Link
+              <a
                 href="/contact"
                 className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 btn-orange"
-                style={{ touchAction: 'manipulation', minHeight: '44px', minWidth: '44px', cursor: 'pointer', position: 'relative', zIndex: 10 }}
+                style={{ 
+                  touchAction: 'manipulation', 
+                  minHeight: '44px', 
+                  minWidth: '44px', 
+                  cursor: 'pointer', 
+                  position: 'relative', 
+                  zIndex: 10,
+                  WebkitTapHighlightColor: 'transparent',
+                  WebkitUserSelect: 'none',
+                  userSelect: 'none'
+                }}
                 onClick={(e) => handleClick(e, '/contact')}
               >
                 Get a Quote
-              </Link>
-              <Link
+              </a>
+              <a
                 href="/projects"
                 className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 btn-orange"
-                style={{ touchAction: 'manipulation', minHeight: '44px', minWidth: '44px', cursor: 'pointer', position: 'relative', zIndex: 10 }}
+                style={{ 
+                  touchAction: 'manipulation', 
+                  minHeight: '44px', 
+                  minWidth: '44px', 
+                  cursor: 'pointer', 
+                  position: 'relative', 
+                  zIndex: 10,
+                  WebkitTapHighlightColor: 'transparent',
+                  WebkitUserSelect: 'none',
+                  userSelect: 'none'
+                }}
                 onClick={(e) => handleClick(e, '/projects')}
               >
                 View Our Projects
-              </Link>
+              </a>
             </div>
           </div>
         </div>
@@ -164,20 +185,36 @@ export default function Home() {
                   <p className="text-muted-foreground">{service.description}</p>
                 </CardContent>
                 <CardFooter>
-                  <Button variant="link" asChild className="p-0 h-auto font-semibold">
-                    <Link href={`/services#${service.title.toLowerCase()}`} className="flex items-center gap-1">
-                      Learn more <ChevronRight className="h-4 w-4" />
-                    </Link>
-                  </Button>
+                  <a
+                    href={`/services#${service.title.toLowerCase()}`}
+                    className="p-0 h-auto font-semibold text-primary hover:text-primary/80 flex items-center gap-1"
+                    style={{ 
+                      touchAction: 'manipulation',
+                      WebkitTapHighlightColor: 'transparent'
+                    }}
+                    onClick={(e) => handleClick(e, `/services#${service.title.toLowerCase()}`)}
+                  >
+                    Learn more <ChevronRight className="h-4 w-4" />
+                  </a>
                 </CardFooter>
               </Card>
             ))}
           </div>
 
           <div className="text-center mt-12">
-            <Button asChild size="lg" className="btn-orange">
-              <Link href="/services">View All Services</Link>
-            </Button>
+            <a
+              href="/services"
+              className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-11 px-8 btn-orange"
+              style={{ 
+                touchAction: 'manipulation',
+                WebkitTapHighlightColor: 'transparent',
+                WebkitUserSelect: 'none',
+                userSelect: 'none'
+              }}
+              onClick={(e) => handleClick(e, '/services')}
+            >
+              View All Services
+            </a>
           </div>
         </div>
       </section>
@@ -231,12 +268,32 @@ export default function Home() {
             Let our expert team bring your vision to life with precision and excellence.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="btn-orange">
-              <Link href="/projects">View Our Projects</Link>
-            </Button>
-            <Button asChild size="lg" className="btn-orange">
-              <Link href="/franchise/apply">Apply for Franchise</Link>
-            </Button>
+            <a
+              href="/projects"
+              className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-11 px-8 btn-orange"
+              style={{ 
+                touchAction: 'manipulation',
+                WebkitTapHighlightColor: 'transparent',
+                WebkitUserSelect: 'none',
+                userSelect: 'none'
+              }}
+              onClick={(e) => handleClick(e, '/projects')}
+            >
+              View Our Projects
+            </a>
+            <a
+              href="/franchise/apply"
+              className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-11 px-8 btn-orange"
+              style={{ 
+                touchAction: 'manipulation',
+                WebkitTapHighlightColor: 'transparent',
+                WebkitUserSelect: 'none',
+                userSelect: 'none'
+              }}
+              onClick={(e) => handleClick(e, '/franchise/apply')}
+            >
+              Apply for Franchise
+            </a>
           </div>
         </div>
       </section>
@@ -318,9 +375,19 @@ export default function Home() {
               </ul>
 
               <div className="mt-8">
-                <Button asChild>
-                  <Link href="/contact">Contact Us</Link>
-                </Button>
+                <a
+                  href="/contact"
+                  className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90"
+                  style={{ 
+                    touchAction: 'manipulation',
+                    WebkitTapHighlightColor: 'transparent',
+                    WebkitUserSelect: 'none',
+                    userSelect: 'none'
+                  }}
+                  onClick={(e) => handleClick(e, '/contact')}
+                >
+                  Contact Us
+                </a>
               </div>
             </div>
 
