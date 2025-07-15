@@ -223,12 +223,12 @@ export default function Home() {
             Let our expert team bring your vision to life with precision and excellence.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="btn-orange">
-              <Link href="/projects">View Our Projects</Link>
-            </Button>
-            <Button asChild size="lg" className="btn-orange">
-              <Link href="/franchise/apply">Apply for Franchise</Link>
-            </Button>
+            <Link href="/projects" className="btn-orange [button-styling-classes]">
+              View Our Projects
+            </Link>
+            <Link href="/franchise/apply" className="btn-orange [button-styling-classes]">
+              Apply for Franchise
+            </Link>
           </div>
         </div>
       </section>
