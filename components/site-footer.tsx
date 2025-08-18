@@ -143,7 +143,20 @@ export function SiteFooter() {
             <div className="fixed bottom-24 right-4 z-50">
               <AIWidget />
             </div>
-            <p>Created by NovaNexus AI.</p>
+            <p className="text-black/60 text-sm">
+              Created by{' '}
+              <a
+                href="https://www.novanexus.nz"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-black transition-all font-medium underline decoration-white/30 
+             hover:text-blue-500 hover:decoration-blue-300 
+             hover:[text-shadow:0_0_8px_rgba(59,130,246,0.8)]"
+              >
+                Novanexus.nz
+              </a>
+
+            </p>
           </div>
         </div>
       </div>
